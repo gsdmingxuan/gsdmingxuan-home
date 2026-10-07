@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>专属于GSD明轩的网页</title>
+    <style>
+        /* 全局样式：渐变背景、字体、边距 */
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            /* 渐变背景 */
+            background: linear-gradient(120deg,#a1c4fd,#c2e9fb);
+            font-family: "微软雅黑",sans-serif;
+            padding: 40px;
+            line-height: 1.8; /* 行间距 */
+            letter-spacing: 1px; /* 字间距 */
+            transition: background 0.4s;
+        }
+        /* 顶部滚动进度条 */
+        #progressBar{
+            position:fixed;
+            top:0;left:0;height:4px;
+            background:#409eff;
+            width:0%;
+            z-index:9999;
+        }
+        /* 暗黑模式【已删掉 !important，修复背景无法切换bug】 */
+        body.dark{
+            background:#1a1a2e;
+        }
+        .dark .card{
+            background:#27293d;
+        }
+        /* ==========重点修复：暗黑模式下所有文字========== */
+        .dark p,
+        .dark h2,
+        .dark h3,
+        .dark li,
+        .dark span{
+            color:#ffffff;
+        }
+        .dark .quote{
+            background:#343752;
+            color:#ddd;
+        }
+        /* 暗黑模式输入框 */
+        .dark input,
+        .dark textarea{
+            background:#2c2f44;
+            color:#fff;
+            border:1px solid #555870;
+        }
+        .dark .btn{
+            background:#409eff;
+        }
+        .dark .btn:hover{
+            background:#1976d2;
+        }
+        /* 毛玻璃卡片暗黑适配 */
+        body.dark .inner-content{
+            background:rgba(40,45,70,0.45);
+        }
+        body.dark .inner-content p,
+        body.dark .inner-content h3{
+            color:#fff;
+        }
+        /* =====滚动渐入动画===== */
+        .fade-scroll{
+            opacity:0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        .fade-scroll.show{
+            opacity:1;
+            transform: translateY(0);
+        }
+        /* 淡入动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+        .fade{
+            animation: fadeIn 1s ease;
+        }
+        /* 大标题样式：居中、阴影、加粗 + 霓虹动画 */
+        h1{
+            text-align: center;
+            font-size: 42px;
+            color: #222;
+            text-shadow: 2px 2px 8px #888; /* 文字阴影 */
+            margin-bottom: 30px;
+        }
+        /* 霓虹标题动画 */
+        .type-title{
+            font-size:42px;
+            text-shadow: 0 0 4px #fff,0 0 10px #ff00de,0 0 20px #ff00de,0 0 40px #00ffff;
+            margin-bottom:0;
+            animation: neon 2s infinite alternate;
+        }
+        @keyframes neon{
+            0%{
+                text-shadow: 0 0 4px #fff,0 0 10px #ff00de,0 0 20px #ff00de,0 0 40px #00ffff;
+            }
+            100%{
+                text-shadow: 0 0 4px #fff,0 0 10px #00ffff,0 0 20px #00ffff,0 0 40px #ff00de;
+            }
+        }
+        /* 彩虹滚动文字 */
+        .rainbow-text{
+            transition: color 0.1s;
+        }
+        /* 闪烁光标 */
+        .cursor{
+            display:inline-block;
+            width:4px;
+            height:42px;
+            background:#222;
+            vertical-align: bottom;
+            animation: blink 0.7s infinite;
+        }
+        body.dark .cursor{
+            background:#fff;
+        }
+        /* 光标闪烁动画 */
+        @keyframes blink{
+            0%{opacity:1;}
+            50%{opacity:0;}
+            100%{opacity:1;}
+        }
+        /* =====星空鼠标拖尾===== */
+        .star-trail{
+            position:fixed;
+            pointer-events:none;
+            border-radius:50%;
+            z-index:9998;
+        }
+        /* 点击爆炸粒子 */
+        .click-particle{
+            position:fixed;
+            pointer-events:none;
+            border-radius:50%;
+            z-index:9997;
+        }
+        /* 回到顶部按钮 */
+        #backTop{
+            position:fixed;
+            bottom:30px;
+            right:30px;
+            padding:10px 16px;
+            border-radius:50%;
+            border:none;
+            background:#409eff;
+            color:#fff;
+            font-size:20px;
+            cursor:pointer;
+            display:none;
+            z-index:999;
+        }
+        /* 图片放大弹窗 */
+        #imgModal{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.85);
+            display:none;
+            z-index:10000;
+            align-items:center;
+            justify-content:center;
+        }
+        #imgModal img{
+            max-width:90%;
+            max-height:90%;
+            border-radius:10px;
+        }
+        #imgModal span{
+            position:absolute;
+            top:20px;
+            right:30px;
+            color:white;
+            font-size:36px;
+            cursor:pointer;
+        }
+        /* 粒子背景画布 */
+        #partCanvas{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:-2;
+        }
+        /* 新增：星空画布 */
+        #starCanvas{
+            position:fixed;
+            top:0;
+            left:0;
+            z-index:-1;
+        }
+        /* 雪花样式 */
+        .snow{
+            position:fixed;
+            color:#fff;
+            font-size:20px;
+            z-index:-1;
+            animation: fall linear infinite;
+        }
+        @keyframes fall{
+            0%{transform:translateY(-10px) rotate(0deg);opacity:1;}
+            100%{transform:translateY(100vh) rotate(360deg);opacity:0.2;}
+        }
+        /* 点击爱心 */
+        .heart{
+            position:fixed;
+            color:#ff4466;
+            font-size:24px;
+            pointer-events:none;
+            animation:heartUp 0.8s forwards;
+            z-index:9997;
+        }
+        @keyframes heartUp{
+            0%{transform:translateY(0);opacity:1;}
+            100%{transform:translateY(-80px);opacity:0;}
+        }
+        h2{
+            font-size: 26px;
+            color: #113;
+            margin: 25px 0 10px;
+            border-left:5px solid #409eff;
+            padding-left:12px;
+        }
+        p{
+            font-size:18px;
+            color:#333;
+        }
+        /* 卡片样式：圆角、阴影、边框 */
+        .card{
+            background: #fff;
+            border-radius:15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15); /* 盒子阴影 */
+            padding:25px;
+            margin:20px auto;
+            max-width:1100px;
+            transition: all 0.3s;
+        }
+        /* hover卡片悬浮 */
+        .card:hover{
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        /* 按钮基础样式 */
+        .btn{
+            display:inline-block;
+            padding:10px 25px;
+            background: #409eff;
+            color: #fff;
+            text-decoration:none;
+            border-radius:8px;
+            border:none;
+            font-size:17px;
+            cursor:pointer;
+            transition:0.3s;
+            margin:5px;
+        }
+        /* 鼠标悬浮变色交互 */
+        .btn:hover{
+            background: #1976d2;
+            transform: translateY(-3px);
+            box-shadow:0 5px 12px #999;
+        }
+        /* 分割线 */
+        hr{
+            margin:30px 0;
+            border:none;
+            height:2px;
+            background:linear-gradient(to right,transparent,#409eff,transparent);
+        }
+        /* 引用框 */
+        .quote{
+            background: #f5f9ff;
+            border-radius:10px;
+            padding:15px 20px;
+            margin:15px 0;
+            font-style: italic;
+            color:#555;
+        }
+        /* 两栏布局 */
+        .row{
+            display:flex;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+        .col{
+            flex:1;
+            min-width:300px;
+        }
+        /* 输入框样式 */
+        input{
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:6px;
+            margin:8px 0;
+            width:280px;
+            font-size:16px;
+        }
+        /* 打字测速文本域 */
+        #typeTestArea{
+            width:100%;
+            height:120px;
+            padding:10px;
+            font-size:18px;
+        }
+        /* ==========新增特效css========== */
+        /* 鼠标跟随光晕圆环 */
+        .light-ring{
+            position:fixed;
+            width:180px;height:180px;
+            border-radius:50%;
+            background:radial-gradient(circle,rgba(100,180,255,0.25),transparent 70%);
+            pointer-events:none;
+            transform:translate(-50%,-50%);
+            z-index:-1;
+        }
+        /* 流动渐变边框毛玻璃卡片 */
+        .flow-border{
+            width:70%;
+            margin:40px auto;
+            padding:3px;
+            border-radius:18px;
+            background:linear-gradient(90deg,#0cf,#f08,#ff0,#0cf);
+            background-size:300% 300%;
+            animation:flow 4s linear infinite;
+        }
+        @keyframes flow{
+            0%{background-position:0% 50%}
+            100%{background-position:300% 50%}
+        }
+        .inner-content{
+            background:rgba(255,255,255,0.22);
+            backdrop-filter:blur(10px);
+            border-radius:15px;
+            padding:24px;
+        }
+        /* 音乐波形画布 */
+        #waveCanvas{
+            width:100%;
+            height:120px;
+            background:rgba(0,0,0,0.1);
+            border-radius:10px;
+            margin-top:10px;
+        }
+        /* ======================【新增：分数计算器专属美化样式】====================== */
+        .calc-wrap{
+            max-width: 420px;
+            margin-top:12px;
+        }
+        .calc-input{
+            width:100% !important;
+            font-size:22px !important;
+            padding:14px 16px !important;
+            border-radius:10px !important;
+            border:1px solid #c5d9f1;
+            background:#f7fbff;
+        }
+        body.dark .calc-input{
+            background:#2c2f44;
+            border-color:#555870;
+        }
+        .calc-keyboard{
+            display:grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap:8px;
+            margin:15px 0;
+        }
+        .calc-keyboard .btn{
+            margin:0;
+            padding:12px 0;
+            font-size:18px;
+            border-radius:10px;
+        }
+        .calc-result-text{
+            font-size:22px;
+            font-weight:bold;
+            color:#409eff;
+            min-height:32px;
+        }
+        body.dark .calc-result-text{
+            color:#7cb9ff;
+        }
+    </style>
+</head>
+<body class="fade">
+    <!--顶部滚动进度条-->
+    <div id="progressBar"></div>
+    <!--新增：鼠标跟随光晕圆环-->
+    <div class="light-ring" id="ring"></div>
+    <!--新增：星空粒子背景画布-->
+    <canvas id="starCanvas"></canvas>
+    <!--粒子背景画布-->
+    <canvas id="partCanvas"></canvas>
+    <!--图片放大弹窗-->
+    <div id="imgModal">
+        <span onclick="closeImg()">×</span>
+        <img id="bigImg">
+    </div>
+    <!--回到顶部按钮-->
+    <button id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+    <!-- ========== 修改后的标题区域，整体居中 ========== -->
+    <div style="text-align:center;">
+        <span class="type-title rainbow-text" id="typeText"></span>
+        <span class="cursor"></span>
+    </div>
+    <p style="text-align:center;font-size:19px;color:#555;margin-bottom:30px;">欢迎老师、同学们浏览我的网页作品！</p>
+    <!-- ✨新增流动渐变边框毛玻璃卡片（放在最前面展示） -->
+    <div class="flow-border fade-scroll">
+        <div class="inner-content">
+            <h3>👋 欢迎参观我的网页作品</h3>
+            <p>这是我自学前端写出来的静态网站，包含音乐、交互特效、小游戏。</p>
+            <p>感谢老师、同学们观看！</p>
+        </div>
+    </div>
+    <!-- 暗黑模式 -->
+    <div class="card fade-scroll">
+        <h2>🌓 暗黑模式切换</h2>
+        <button onclick="toggleDark()" class="btn">切换深色/浅色</button>
+    </div>
+    <!-- 音乐播放区域：点击切换音乐 + 波形可视化【修复audio标签闭合】 -->
+    <div class="card fade-scroll">
+        <h2>🎵 背景音乐功能 + 音频波形可视化</h2>
+        <p onclick="playMusic()" style="color:#409eff;cursor:pointer;font-size:20px;font-weight:bold;">
+            ▶ 点击我 播放/暂停 背景音乐
+        </p>
+        <canvas id="waveCanvas"></canvas>
+        <audio id="bgm" loop>
+            <source src="music.mp3" type="audio/mpeg">
+        
+    </div>
+    <!-- 排版组件展示 -->
+    <div class="card fade-scroll">
+        <h2>📖 排版组件展示</h2>
+        <p><strong>加粗文字</strong> &nbsp; <em>斜体文字</em></p>
+        <h3>有序列表</h3>
+        <ol>
+            <li>网页渐变背景</li>
+            <li>卡片阴影布局</li>
+            <li>鼠标悬浮动画</li>
+        </ol>
+        <h3>无序列表（圆点）</h3>
+        <ul>
+            <li>⭐星星图标</li>
+            <li>❤️爱心图标</li>
+            <li>➡箭头图标</li>
+        </ul>
+        <hr>
+        <div class="quote">
+            这里是引用框示例
+        </div>
+    </div>
+    <!-- 两栏布局 -->
+    <div class="card row fade-scroll">
+        <div class="col">
+            <h2>📝 表单组件</h2>
+            <p>输入框：</p>
+            <input type="text" placeholder="请输入内容...">
+            <p><input type="checkbox"> 我已阅读协议</p>
+        </div>
+        <div class="col">
+            <h2>🔗 跳转链接</h2>
+            <a href="https://www.baidu.com" class="btn">点击跳转百度</a>
+            <br>
+            <button class="btn">普通按钮</button>
+        </div>
+    </div>
+    <!-- 视频嵌入【修复：移除默认muted，取消静音】 -->
+    <div class="card fade-scroll">
+        <h2>🎬 视频模块</h2>
+        <video width="100%" style="border-radius:10px;" controls>
+            <source src="video.mp4" type="video/mp4">
+            浏览器不支持视频播放
+        </video>
+        <p style="color:#777;margin-top:10px;"></p>
+        <p style="margin-top:15px;font-size:18px;color:#333;line-height:1.8;">
+            我是GSD明轩这是我自己动手制作的网页作品。通过学习HTML和CSS，实现了页面排版、卡片样式以及视频播放功能。
+            欢迎各位老师和同学们浏览，期待大家多多提出建议。
+        </p>
+    </div>
+    <!-- 当前时间 -->
+    <div class="card fade-scroll">
+        <h2>🕒 当前时间</h2>
+        <p id="time" style="font-size:22px;font-weight:bold;"></p>
+    </div>
+    <!-- 简易秒表 -->
+    <div class="card fade-scroll">
+        <h2>⏱️简易秒表</h2>
+        <p id="stopwatch" style="font-size:24px;font-weight:bold;">00:00:00</p>
+        <button onclick="startTimer()" class="btn">开始</button>
+        <button onclick="pauseTimer()" class="btn">暂停</button>
+        <button onclick="resetTimer()" class="btn">清零</button>
+    </div>
+    <!-- 升级随机寄语【分类选择】 -->
+    <div class="card fade-scroll">
+        <h2>💬 随机寄语（分类）</h2>
+        <select id="quoteType" class="btn">
+            <option value="inspire">励志</option>
+            <option value="literature">文艺</option>
+        </select>
+        <p id="msg" style="font-size:18px;color:#409eff;min-height:38px;">点下方按钮获取寄语✨</p>
+        <button onclick="changeWord()" class="btn">换一句寄语</button>
+    </div>
+    <!-- 交互按钮演示 -->
+    <div class="card fade-scroll">
+        <h2>🖱️交互按钮演示</h2>
+        <button class="btn"
+        onmouseover="this.style.background='#2b70dd'"
+        onmouseout="this.style.background='#409eff'"
+        onclick="alert('我就是明轩，你点了按钮！🎉')">
+            点我弹出提示
+        </button>
+    </div>
+    <!-- 图片展示（点击放大） -->
+    <div class="card fade-scroll">
+        <h2>🖼️图片展示（点击图片放大）</h2>
+        <img src="logo.jpg" onclick="openImg(this.src)" style="width:380px;border-radius:10px;box-shadow: 2px 2px 8px #ccc;cursor:pointer;">
+        <p style="margin-top:12px;color:#666;">这是我很喜欢的一幅插画。
+            从零基础开始学习 HTML，一点点编写代码、调试页面，亲手完成了这个网页作品。
+            里面加入了音乐、小游戏等互动功能，是我学习路上的的小成果，欢迎老师和同学们浏览体验！
+        </p>
+    </div>
+    <!-- 颜色猜谜小游戏 -->
+    <div class="card fade-scroll">
+        <h2>🎨颜色猜猜看</h2>
+        <p>看下方色块，输入rgb三个数字猜颜色</p>
+        <div id="colorBox" style="width:120px;height:120px;border-radius:8px;margin:10px 0;"></div>
+        <input id="rIn" placeholder="R(0-255)">
+        <input id="gIn" placeholder="G(0-255)">
+        <input id="bIn" placeholder="B(0-255)">
+        <br>
+        <button onclick="checkColor()" class="btn">提交猜测</button>
+        <button onclick="newColor()" class="btn">换颜色</button>
+        <p id="colorTip"></p>
+    </div>
+    <!-- 本地留言板，带删除按钮（整合第二个版本留言逻辑） -->
+    <div class="card fade-scroll">
+        <h2>📝留言板（本地保存）</h2>
+        <input id="msgName" placeholder="你的名字">
+        <br>
+        <input id="msgContent" placeholder="写下留言">
+        <br>
+        <button onclick="addMsg()" class="btn">提交留言</button>
+        <div id="msgList" style="margin-top:15px;"></div>
+    </div>
+    <!-- 【新版分数计算器，美化后，保留全部原有计算逻辑】 -->
+    <div class="card fade-scroll">
+        <h2>🧮分数计算器</h2>
+        <p>格式示例：1/2+1/3  支持 + - * / ，支持负数如 -2/1*648</p>
+        <div class="calc-wrap">
+            <input id="calcInput" class="calc-input" placeholder="输入分数算式">
+            <div class="calc-keyboard">
+                <button onclick="inputNum('1')" class="btn">1</button>
+                <button onclick="inputNum('2')" class="btn">2</button>
+                <button onclick="inputNum('3')" class="btn">3</button>
+                <button onclick="inputNum('/')" class="btn">/</button>
+                <button onclick="inputNum('4')" class="btn">4</button>
+                <button onclick="inputNum('5')" class="btn">5</button>
+                <button onclick="inputNum('6')" class="btn">6</button>
+                <button onclick="inputNum('+')" class="btn">+</button>
+                <button onclick="inputNum('7')" class="btn">7</button>
+                <button onclick="inputNum('8')" class="btn">8</button>
+                <button onclick="inputNum('9')" class="btn">9</button>
+                <button onclick="inputNum('-')" class="btn">-</button>
+                <button onclick="inputNum('0')" class="btn">0</button>
+                <button onclick="inputNum('*')" class="btn">×</button>
+                <button onclick="clearCalc()" class="btn">清空</button>
+                <button onclick="calc()" class="btn">计算</button>
+            </div>
+            <p class="calc-result-text">结果：<span id="calcResult"></span></p>
+        </div>
+    </div>
+    <!-- 时间胶囊模块【新增】 -->
+    <div class="card fade-scroll">
+        <h2>⏳简易时间胶囊</h2>
+        <p>写一段话，设置解锁日期，到时间才能查看</p>
+        <input id="capsuleText" placeholder="写下留给未来的话">
+        <br>
+        <input id="capsuleDate" type="date">
+        <br>
+        <button onclick="saveCapsule()" class="btn">保存胶囊</button>
+        <button onclick="readCapsule()" class="btn">查看胶囊</button>
+        <p id="capsuleResult"></p>
+    </div>
+    <!-- 切换背景颜色【修改按钮调用新函数】 -->
+    <div class="card fade-scroll">
+        <h2>🎨切换背景颜色（若处于暗黑模式下，颜色将变为深色）</h2>
+        <button onclick="changeBg(0)" class="btn">粉色</button>
+        <button onclick="changeBg(1)" class="btn">浅蓝</button>
+        <button onclick="changeBg(2)" class="btn">浅绿</button>
+    </div>
+    <!-- 待办清单 -->
+    <div class="card fade-scroll">
+        <h2>📋待办清单</h2>
+        <input id="todoInput" placeholder="输入要做的事" style="padding:8px;width:240px;">
+        <button onclick="addTodo()" class="btn">添加</button>
+        <ul id="todoList"></ul>
+    </div>
+    <!-- 猜数字卡片 -->
+    <div class="card fade-scroll">
+        <h2>🎮猜数字小游戏</h2>
+        <p>我想好1~10之间一个数字，你来猜猜</p>
+        <input id="guessNum" type="number" placeholder="输入数字" style="padding:8px;width:180px;">
+        <button onclick="checkGuess()" class="btn">提交答案</button>
+        <p id="tip"></p>
+    </div>
+    <!-- 石头剪刀布 -->
+    <div class="card fade-scroll">
+        <h2>✊✌️🖐️石头剪刀布</h2>
+        <button onclick="playGame('rock')" class="btn">石头</button>
+        <button onclick="playGame('scissors')" class="btn">剪刀</button>
+        <button onclick="playGame('paper')" class="btn">布</button>
+        <p id="rpsResult" style="font-size:20px;margin-top:10px;"></p>
+    </div>
+    <!-- 访问次数 -->
+    <div class="card fade-scroll">
+        <h2>👀访问次数</h2>
+        <p>本页面已经被访问：<span id="count">0</span> 次</p>
+        <button onclick="resetCount()" class="btn">重置访问次数</button>
+    </div>
+    <!-- =====新增：打字测速模块===== -->
+    <div class="card fade-scroll">
+        <h2>⌨️打字测速</h2>
+        <p>原文：<span id="typeOrigin">编程是一场有趣的旅途，坚持练习就能不断进步。</span></p>
+        <textarea id="typeTestArea" placeholder="在这里输入上面这段文字，开始测速"></textarea>
+        <br>
+        <button onclick="startTypeTest()" class="btn">开始测速</button>
+        <button onclick="endTypeTest()" class="btn">结束测速</button>
+        <p id="typeResult"></p>
+    </div>
+    <!-- 你要添加的结束语 -->
+    <hr>
+    <div class="fade-scroll" style="text-align:center;padding:30px 10px;">
+        <h2 style="border:none;">🙏 最后感谢所有帮忙测试、寻找BUG的小伙伴！
+            （马某、展某、王某你们别看了）
+        </h2>
+        <p>本网页作品到此结束，欢迎继续体验页面所有交互功能✨</p>
+    </div>
+<script>
+// 页面滚动进度条
+window.onscroll = function(){
+  let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  let scrolled = (winScroll / height)*100;
+  document.getElementById("progressBar").style.width = scrolled + "%";
+}
+// 浏览器标签页切换动画
+let originTitle = document.title;
+window.addEventListener("blur",()=>{
+  document.title = "👋 别走呀";
+})
+window.addEventListener("focus",()=>{
+  document.title = originTitle;
+})
+// =====================新增特效JS=====================
+// 背景配色数组：浅色 / 暗黑两套
+const bgList = [
+    {light:'#ffd6e8', dark:'#3b242c'}, //粉色
+    {light:'linear-gradient(120deg,#a1c4fd,#c2e9fb)', dark:'#1a2438'}, //浅蓝渐变
+    {light:'#d4edda', dark:'#1c362b'}  //浅绿
+]
+let colorIndex = 1; // 默认浅蓝
+// 切换背景函数
+function changeBg(index){
+    colorIndex = index;
+    if(document.body.classList.contains('dark')){
+        document.body.style.background = bgList[index].dark;
+    }else{
+        document.body.style.background = bgList[index].light;
+    }
+}
+// 鼠标跟随光晕圆环
+const ring = document.getElementById('ring');
+document.addEventListener('mousemove',e=>{
+ ring.style.left = e.clientX + 'px';
+ ring.style.top = e.clientY + 'px';
+})
+// 星空背景
+const canvasStar = document.getElementById('starCanvas');
+const ctxStar = canvasStar.getContext('2d');
+function resizeStar(){
+  canvasStar.width = window.innerWidth;
+  canvasStar.height = window.innerHeight;
+}
+resizeStar();
+window.addEventListener('resize',resizeStar);
+let stars = [];
+for(let i=0;i<250;i++){
+  stars.push({
+    x:Math.random()*canvasStar.width,
+    y:Math.random()*canvasStar.height,
+    r:Math.random()*1.2+0.2,
+    speed:Math.random()*0.4+0.1
+  })
+}
+function drawStar(){
+  ctxStar.clearRect(0,0,canvasStar.width,canvasStar.height);
+  stars.forEach(s=>{
+    ctxStar.beginPath();
+    ctxStar.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctxStar.fillStyle=`rgba(255,255,255,${Math.random()*0.6+0.2})`;
+    ctxStar.fill();
+    s.y += s.speed;
+    if(s.y>canvasStar.height){
+      s.y=0;
+      s.x=Math.random()*canvasStar.width;
+    }
+  })
+  requestAnimationFrame(drawStar);
+}
+drawStar();
+// ======================================================
+// 星空鼠标拖尾
+const starList = [];
+document.addEventListener('mousemove',e=>{
+    const star = document.createElement('div');
+    star.className="star-trail";
+    const size = Math.random()*6+2;
+    star.style.width = size+"px";
+    star.style.height = size+"px";
+    star.style.left = e.clientX+"px";
+    star.style.top = e.clientY+"px";
+    star.style.background = `hsl(${Math.random()*360},80%,70%)`;
+    star.style.boxShadow = `0 0 8px hsl(${Math.random()*360},80%,70%)`;
+    document.body.appendChild(star);
+    starList.push(star);
+    if(starList.length>30){
+        const old = starList.shift();
+        old.remove();
+    }
+    setTimeout(()=>star.remove(),200);
+})
+// 点击爆炸粒子 + 爱心共存
+document.addEventListener("click",function(e){
+    //爱心
+    let heart = document.createElement("div");
+    heart.className="heart";
+    heart.innerText="❤️";
+    heart.style.left = e.clientX+"px";
+    heart.style.top = e.clientY+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),800);
+    //彩色爆炸粒子
+    for(let i=0;i<12;i++){
+        let p = document.createElement("div");
+        p.className="click-particle";
+        const size = Math.random()*6+3;
+        p.style.width = size+"px";
+        p.style.height = size+"px";
+        p.style.left = e.clientX+"px";
+        p.style.top = e.clientY+"px";
+        const color = `hsl(${Math.random()*360},85%,65%)`;
+        p.style.background = color;
+        p.style.boxShadow = `0 0 6px ${color}`;
+        const angle = Math.random()*Math.PI*2;
+        const speed = Math.random()*80+40;
+        const tx = Math.cos(angle)*speed;
+        const ty = Math.sin(angle)*speed;
+        p.animate([
+            {transform:"translate(0,0)",opacity:1},
+            {transform:`translate(${tx}px,${ty}px)`,opacity:0}
+        ],{duration:600,easing:"ease-out"});
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(),600);
+    }
+})
+// 滚动卡片渐入
+const cards = document.querySelectorAll(".fade-scroll");
+function checkScroll(){
+    cards.forEach(card=>{
+        const rect = card.getBoundingClientRect();
+        if(rect.top < window.innerHeight - 80){
+            card.classList.add("show");
+        }
+    })
+}
+window.addEventListener("scroll",checkScroll);
+// 彩虹文字：滚动改变颜色
+const rainbowTxt = document.querySelector(".rainbow-text");
+window.addEventListener("scroll",()=>{
+    const hue = window.scrollY % 360;
+    rainbowTxt.style.color = `hsl(${hue},90%,60%)`;
+})
+// 雪花飘落
+function createSnow(){
+    let snow = document.createElement("div");
+    snow.className = "snow";
+    snow.innerText = "❄";
+    snow.style.left = Math.random()*100+"vw";
+    snow.style.animationDuration = 5+Math.random()*6 + "s";
+    document.body.appendChild(snow);
+    setTimeout(()=>snow.remove(),11000);
+}
+setInterval(createSnow,400);
+// =====打字机 + 访问计数 合并加载=====
+const titleStr = "✨ GSD明轩做的第一个网页 ✨";
+let i = 0;
+const dom = document.getElementById("typeText");
+dom.innerText = "";
+function typeWrite(){
+  if(i < titleStr.length){
+    dom.innerText += titleStr[i];
+    i++;
+    setTimeout(typeWrite,120);
+  }
+}
+window.onload = function(){
+  typeWrite();
+  checkScroll();
+  //访问计数
+  let num = localStorage.getItem("visit") || 0;
+  num++;
+  localStorage.setItem("visit", num);
+  document.getElementById("count").innerText = num;
+  renderMsg();
+  newColor();
+  initAudioVisual();
+}
+// =====暗黑模式【修改！切换暗黑时自动应用当前选中的背景】=====
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  changeBg(colorIndex);
+}
+// =====图片放大=====
+function openImg(src){
+  document.getElementById("bigImg").src = src;
+  document.getElementById("imgModal").style.display = "flex";
+}
+function closeImg(){
+  document.getElementById("imgModal").style.display = "none";
+}
+// =====回到顶部=====
+window.addEventListener("scroll",function(){
+  const btn = document.getElementById("backTop");
+  if(window.scrollY>300){
+    btn.style.display = "block";
+  }else{
+    btn.style.display = "none";
+  }
+})
+// =====粒子背景=====
+const canvas = document.getElementById("partCanvas");
+const ctx = canvas.getContext("2d");
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+let particles = [];
+class Particle{
+  constructor(){
+    this.x = Math.random()*canvas.width;
+    this.y = Math.random()*canvas.height;
+    this.r = Math.random()*2+1;
+    this.speedX = Math.random()*0.6-0.3;
+    this.speedY = Math.random()*0.6-0.3;
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x<0||this.x>canvas.width) this.speedX *= -1;
+    if(this.y<0||this.y>canvas.height) this.speedY *= -1;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle="rgba(64,158,255,0.25)";
+    ctx.fill();
+  }
+}
+for(let p=0;p<60;p++) particles.push(new Particle());
+function animatePart(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(item=>{
+    item.update();
+    item.draw();
+  })
+  requestAnimationFrame(animatePart);
+}
+animatePart();
+// =====秒表=====
+let timerId = null;
+let timeVal = 0;
+function startTimer(){
+  if(timerId) return;
+  timerId = setInterval(()=>{
+    timeVal++;
+    let h = String(Math.floor(timeVal/3600)).padStart(2,"0");
+    let m = String(Math.floor((timeVal%3600)/60)).padStart(2,"0");
+    let s = String(timeVal%60).padStart(2,"0");
+    document.getElementById("stopwatch").innerText = `${h}:${m}:${s}`;
+  },1000)
+}
+function pauseTimer(){
+  clearInterval(timerId);
+  timerId=null;
+}
+function resetTimer(){
+  pauseTimer();
+  timeVal=0;
+  document.getElementById("stopwatch").innerText="00:00:00";
+}
+// =====音乐播放=====
+let audioCtx, analyser, waveCanvas, waveCtx;
+function initAudioVisual(){
+    waveCanvas = document.getElementById("waveCanvas");
+    waveCtx = waveCanvas.getContext("2d");
+    waveCanvas.width = waveCanvas.clientWidth;
+    waveCanvas.height = waveCanvas.clientHeight;
+    window.addEventListener('resize',()=>{
+        waveCanvas.width = waveCanvas.clientWidth;
+        waveCanvas.height = waveCanvas.clientHeight;
+    })
+}
+function drawWave(){
+    if(!analyser) return;
+    let bufferLength = analyser.frequencyBinCount;
+    let dataArray = new Uint8Array(bufferLength);
+    analyser.getByteTimeDomainData(dataArray);
+    waveCtx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
+    waveCtx.lineWidth = 2;
+    waveCtx.strokeStyle = "#409eff";
+    waveCtx.beginPath();
+    let sliceWidth = waveCanvas.width / bufferLength;
+    let x = 0;
+    for(let i=0;i<bufferLength;i++){
+        let v = dataArray[i]/128.0;
+        let y = v * waveCanvas.height /2;
+        if(i===0) waveCtx.moveTo(x,y);
+        else waveCtx.lineTo(x,y);
+        x += sliceWidth;
+    }
+    waveCtx.lineTo(waveCanvas.width, waveCanvas.height/2);
+    waveCtx.stroke();
+    requestAnimationFrame(drawWave);
+}
+function playMusic(){
+  let audio = document.getElementById("bgm");
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    const source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+  }
+  if(audio.paused){
+    // 修复：浏览器策略，resume音频上下文
+    if(audioCtx.state === 'suspended'){
+      audioCtx.resume();
+    }
+    audio.play().catch(err=>{
+      console.log("播放失败：",err);
+      alert("音频播放失败，请确认music.mp3文件放在和html同一个文件夹！");
+    });
+    drawWave();
+  }else{
+    audio.pause();
+  }
+}
+// =====实时时间=====
+function showTime(){
+  let d = new Date();
+  document.getElementById("time").innerText = d.toLocaleString();
+}
+showTime();
+setInterval(showTime,1000);
+// =====升级随机寄语【多分类】=====
+const quoteData = {
+    inspire:[
+        "星光不问赶路人，时光不负有心人",
+        "坚持下去，代码会给你答案",
+        "每一次调试，都是在靠近目标",
+        "路虽远，行则将至"
+    ],
+    literature:[
+        "山野万里，你是藏在微风里的欢喜",
+        "晚风轻踩云朵，落日贩卖温柔",
+        "人间朝暮，叶落惊秋",
+        "以渺小启程，以伟大结束"
+    ]
+};
+function changeWord(){
+    let type = document.getElementById("quoteType").value;
+    let arr = quoteData[type];
+    let r = Math.floor(Math.random() * arr.length);
+    document.getElementById("msg").innerText = arr[r];
+}
+// =====颜色猜谜=====
+let targetR,targetG,targetB;
+function newColor(){
+  targetR = Math.floor(Math.random()*256);
+  targetG = Math.floor(Math.random()*256);
+  targetB = Math.floor(Math.random()*256);
+  document.getElementById("colorBox").style.background = `rgb(${targetR},${targetG},${targetB})`;
+  document.getElementById("colorTip").innerText="";
+}
+function checkColor(){
+  let r = Number(document.getElementById("rIn").value);
+  let g = Number(document.getElementById("gIn").value);
+  let b = Number(document.getElementById("bIn").value);
+  let dr = Math.abs(r-targetR);
+  let dg = Math.abs(g-targetG);
+  let db = Math.abs(b-targetB);
+  if(dr<15 && dg<15 && db<15){
+    document.getElementById("colorTip").innerText="🎉猜对啦！";
+  }else{
+    document.getElementById("colorTip").innerText=`有点差距，目标rgb(${targetR},${targetG},${targetB})`;
+  }
+}
+// =====留言板：加载、删除、新增（整合第二个代码留言逻辑）=====
+function renderMsg(){
+  let list = JSON.parse(localStorage.getItem("msgBoard")) || [];
+  const wrap = document.getElementById("msgList");
+  wrap.innerHTML = "";
+  list.forEach((item,i)=>{
+      wrap.innerHTML += `<div style="margin:8px 0;border-bottom:1px solid #aaa;padding:4px;">
+      ${item.name}：${item.content}
+      <button onclick="delMsg(${i})">删除</button>
+      </div>`
+  })
+}
+function addMsg(){
+  let list = JSON.parse(localStorage.getItem("msgBoard")) || [];
+  const name = document.getElementById("msgName").value;
+  const cnt = document.getElementById("msgContent").value;
+  if(!name||!cnt) return alert("名字和留言不能为空！");
+  list.push({name,content:cnt});
+  localStorage.setItem("msgBoard",JSON.stringify(list));
+  renderMsg();
+  document.getElementById("msgName").value="";
+  document.getElementById("msgContent").value="";
+}
+function delMsg(idx){
+  let list = JSON.parse(localStorage.getItem("msgBoard")) || [];
+  list.splice(idx,1);
+  localStorage.setItem("msgBoard",JSON.stringify(list));
+  renderMsg();
+}
+// =====时间胶囊=====
+function saveCapsule(){
+    let text = document.getElementById("capsuleText").value;
+    let date = document.getElementById("capsuleDate").value;
+    if(!text||!date){
+        document.getElementById("capsuleResult").innerText="请填写内容和解锁日期";
+        return;
+    }
+    let capsule = {text,unlock:date};
+    localStorage.setItem("timeCapsule",JSON.stringify(capsule));
+    document.getElementById("capsuleResult").innerText="✅时间胶囊保存成功！";
+}
+function readCapsule(){
+    let raw = localStorage.getItem("timeCapsule");
+    if(!raw){
+        document.getElementById("capsuleResult").innerText="暂无时间胶囊";
+        return;
+    }
+    let cap = JSON.parse(raw);
+    let now = new Date();
+    let unlockDate = new Date(cap.unlock);
+    if(now >= unlockDate){
+        document.getElementById("capsuleResult").innerText="🔓已解锁："+cap.text;
+    }else{
+        document.getElementById("capsuleResult").innerText="🔒还没到解锁日期："+cap.unlock;
+    }
+}
+// =====待办清单=====
+function addTodo(){
+  let val = document.getElementById("todoInput").value;
+  if(!val) return;
+  let li = document.createElement("li");
+  li.innerText = val;
+  li.style.margin = "6px 0";
+  // 创建删除按钮
+  let delBtn = document.createElement("button");
+  delBtn.innerText = "删除";
+  delBtn.style.marginLeft = "10px";
+  delBtn.style.padding = "3px 8px";
+  delBtn.style.borderRadius = "4px";
+  delBtn.style.border = "none";
+  delBtn.style.background = "#ff666b";
+  delBtn.style.color = "white";
+  delBtn.onclick = function(){
+      li.remove();
+  }
+  li.appendChild(delBtn);
+  document.getElementById("todoList").appendChild(li);
+  document.getElementById("todoInput").value = "";
+}
+// =====猜数字游戏=====
+let secret = Math.floor(Math.random()*10)+1;
+function checkGuess(){
+  let g = Number(document.getElementById("guessNum").value);
+  if(g === secret){
+    document.getElementById("tip").innerText = "🎉猜对了！";
+  }else if(g > secret){
+    document.getElementById("tip").innerText = "大了，再小一点";
+  }else{
+    document.getElementById("tip").innerText = "小了，再大一点";
+  }
+}
+// =====石头剪刀布游戏=====
+function playGame(userSelect){
+    const arr = ["rock","scissors","paper"];
+    const computer = arr[Math.floor(Math.random()*3)];
+    let userTxt,comTxt;
+    if(userSelect === "rock") userTxt="石头";
+    if(userSelect === "scissors") userTxt="剪刀";
+    if(userSelect === "paper") userTxt="布";
+    if(computer === "rock") comTxt="石头";
+    if(computer === "scissors") comTxt="剪刀";
+    if(computer === "paper") comTxt="布";
+    let resText;
+    if(userSelect === computer){
+        resText = `你出${userTxt}，电脑出${comTxt}，平局！`;
+    }else if(
+        (userSelect==="rock" && computer==="scissors")||
+        (userSelect==="scissors" && computer==="paper")||
+        (userSelect==="paper" && computer==="rock")
+    ){
+        resText = `你出${userTxt}，电脑出${comTxt}，🎉你赢了！`;
+    }else{
+        resText = `你出${userTxt}，电脑出${comTxt}，😥你输了！`;
+    }
+    document.getElementById("rpsResult").innerText = resText;
+}
+// =====访问计数重置=====
+function resetCount(){
+  localStorage.removeItem("visit");
+  document.getElementById("count").innerText = "0";
+}
+// =====打字测速功能=====
+let typeStart = null;
+const originText = document.getElementById("typeOrigin").innerText;
+function startTypeTest(){
+    typeStart = Date.now();
+    document.getElementById("typeResult").innerText = "⏱️开始输入！";
+}
+function endTypeTest(){
+    if(!typeStart){
+        document.getElementById("typeResult").innerText="先点【开始测速】";
+        return;
+    }
+    const end = Date.now();
+    const usedSec = (end - typeStart)/1000;
+    const input = document.getElementById("typeTestArea").value;
+    // 计算正确字符
+    let correct=0;
+    for(let k=0;k<input.length;k++){
+      if(input[k] === originText[k]) correct++;
+    }
+    const accuracy = (correct / originText.length *100).toFixed(1);
+    const wpm = Math.round( (input.length / usedSec) *60 /5 );
+    document.getElementById("typeResult").innerText =
+    `用时${usedSec.toFixed(1)}秒，正确率${accuracy}%，打字速度${wpm} WPM`;
+    typeStart = null;
+}
+// =====分数计算器（整合第二个版本，支持负数、分数、小数，双精度防报错）=====
+function calc(){
+    const input = document.getElementById("calcInput").value;
+    const resDom = document.getElementById("calcResult");
+    try{
+        // 把分数转为小数计算
+        let exp = input.replace(/(\d+)\/(\d+)/g, (m,a,b)=> `(${a}/${b})`);
+        let ans = eval(exp);
+        ans = Number(ans.toPrecision(12));
+        resDom.innerText = `${ans}`;
+    }catch(e){
+        resDom.innerText = "计算出错，请检查输入！支持如 -2/1*648 、1/2+0.5";
+    }
+}
+function inputNum(s){
+    document.getElementById("calcInput").value += s;
+}
+function clearCalc(){
+    document.getElementById("calcInput").value="";
+    document.getElementById("calcResult").innerText="";
+}
+</script>
+</body>
+</html>
