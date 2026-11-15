@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>专属于GSD明轩的第一个网页</title>
+  <style>
+    :root {
+      --primary: #409eff;
+      --primary-dark: #1976d2;
+      --primary-light: #eaf3ff;
+      --accent: #a855f7;
+      --bg-light: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #e0c3fc 100%);
+      --bg-dark: #0f0f1a;
+      --card-bg: rgba(255,255,255,0.82);
+      --card-bg-dark: rgba(30,32,48,0.85);
+      --text: #1a1a2e;
+      --text-dark: #e8e8f0;
+      --border: rgba(255,255,255,0.35);
+      --radius: 20px;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 18px 50px rgba(64, 158, 255, 0.18);
+      --nav-height: 62px;
+      --glass-blur: 18px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-light);
+      background-attachment: fixed;
+      font-family: "Inter", "微软雅黑", "PingFang SC", "Helvetica Neue", sans-serif;
+      padding: calc(var(--nav-height) + 26px) 24px 60px;
+      line-height: 1.8;
+      letter-spacing: 0.4px;
+      transition: background 0.5s, color 0.4s;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+      color: var(--text);
+    }
+    body.dark { background: var(--bg-dark); color: var(--text-dark); }
+
+    body.dark .card, body.dark .accordion-item { background: var(--card-bg-dark); }
+    body.dark p, body.dark h2, body.dark h3, body.dark li, body.dark label, body.dark .pomo-status { color: var(--text-dark); }
+    body.dark .quote { background: rgba(40,45,70,0.6); color: #ddd; }
+    body.dark input, body.dark textarea, body.dark select { background: rgba(44,47,68,0.9); color: #fff; border-color: #555870; }
+    body.dark .btn { background: var(--primary); }
+    body.dark .inner-content { background: rgba(40, 45, 70, 0.45); }
+    body.dark .inner-content p, body.dark .inner-content h3 { color: #fff; }
+    body.dark .calc-input { background: rgba(44,47,68,0.9); border-color: #555870; }
+    body.dark .calc-result-text { color: var(--primary-light); }
+    body.dark .cursor { background: #fff; }
+    body.dark .nav-bar { background: rgba(20,22,35,0.88); }
+    body.dark .nav-bar button { background: rgba(58,63,92,0.8); color: var(--primary-light); }
+    body.dark .nav-bar button:hover { background: var(--primary); color: #fff; }
+    body.dark .nav-bar .nav-title { color: var(--primary-light); }
+    body.dark #wheelResult { color: var(--primary-light); }
+    body.dark .accordion-header { color: var(--primary-light); border-color: #3a3f5c; }
+    body.dark .accordion-header:hover { background: rgba(52,55,82,0.6); }
+    body.dark .pomo-display { color: var(--primary-light); }
+    body.dark .dice { background: #3a3e5a; color: #fff; border-color: var(--primary-light); }
+    body.dark .accordion-item { border-color: #3a3f5c; }
+    body.dark .quote-modern { background: rgba(47,53,75,0.7); color: #ddd; }
+    body.dark .tag { background: rgba(58,63,92,0.8); border-color: #555870; color: var(--primary-light); }
+    body.dark .demo-block { background: rgba(46,51,72,0.7); border-color: #404a6b; }
+    body.dark .demo-title { color: var(--primary-light); }
+    body.dark .poem-line { color: #cdd6f4; }
+    body.dark #poemAuthor { color: #a6adc8; }
+    body.dark .mole-hole { background: #3a3f5c; }
+    body.dark .stat-box { background: rgba(46,51,72,0.7); border-color: #404a6b; }
+    body.dark .theme-swatch { border-color: rgba(255,255,255,0.2); }
+    body.dark #dashboardCanvas { background: rgba(255,255,255,0.03); }
+    body.dark .task-item { background: rgba(46,51,72,0.6); border-color: #404a6b; }
+
+    .nav-bar {
+      position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 18px; z-index: 10001;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+    }
+    .nav-bar::-webkit-scrollbar { display: none; }
+    .nav-bar button {
+      flex-shrink: 0; padding: 8px 16px; border-radius: 24px;
+      border: none; background: var(--primary-light); color: var(--primary-dark);
+      font-size: 14px; cursor: pointer; transition: all 0.25s; font-weight: 600;
+    }
+    .nav-bar button:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
+    .nav-bar .nav-title { font-weight: 800; color: var(--primary-dark); margin-right: 10px; flex-shrink: 0; font-size: 16px; }
+
+    #progressBar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; z-index: 99999; transition: width 0.1s; }
+    #backTop {
+      position: fixed; bottom: 30px; right: 30px; width: 52px; height: 52px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; font-size: 22px; cursor: pointer;
+      display: none; z-index: 999; box-shadow: 0 8px 24px rgba(64, 158, 255, 0.45); transition: all 0.25s;
+    }
+    #backTop:hover { transform: scale(1.1) translateY(-3px); }
+    .light-ring {
+      position: fixed; width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(100, 180, 255, 0.28), transparent 70%);
+      pointer-events: none; transform: translate(-50%, -50%); z-index: -1; transition: opacity 0.3s;
+    }
+    #partCanvas, #starCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    #partCanvas { z-index: -2; }
+    #starCanvas { z-index: -1; }
+    .star-trail, .click-particle, .heart, .snow { position: fixed; pointer-events: none; border-radius: 50%; }
+    .snow { border-radius: 0; color: #fff; font-size: 20px; z-index: -1; animation: fall linear infinite; }
+    @keyframes fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0.2; } }
+    .heart { color: #ff4466; font-size: 24px; animation: heartUp 0.8s forwards; z-index: 9997; }
+    @keyframes heartUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-80px); opacity: 0; } }
+    .click-particle { z-index: 9997; }
+
+    .type-title {
+      font-size: clamp(28px, 6vw, 52px);
+      background: linear-gradient(135deg, #667eea, #f093fb, #4facfe, #43e97b);
+      background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; animation: gradientShift 5s ease infinite;
+      margin-bottom: 0; display: inline-block; font-weight: 900; letter-spacing: 1px;
+    }
+    @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    .cursor { display: inline-block; width: 4px; height: clamp(28px, 6vw, 52px); background: linear-gradient(180deg, #667eea, #a855f7); vertical-align: bottom; animation: blink 0.7s infinite; border-radius: 2px; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .card {
+      background: var(--card-bg); backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px; margin: 22px auto;
+      max-width: 1100px; transition: transform 0.1s ease-out, box-shadow 0.4s;
+      scroll-margin-top: calc(var(--nav-height) + 22px); transform-style: preserve-3d; will-change: transform;
+      border: 1px solid rgba(255,255,255,0.5); position: relative; overflow: hidden;
+    }
+    .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); }
+    body.dark .card { border-color: rgba(255,255,255,0.08); }
+    .card:hover { box-shadow: var(--shadow-hover); }
+    .card h2 {
+      font-size: 23px; color: var(--text); margin: 0 0 14px; padding-left: 14px;
+      transform: translateZ(20px); font-weight: 800; display: flex; align-items: center; gap: 10px; position: relative;
+    }
+    .card h2::before { content: ""; position: absolute; left: 0; width: 5px; height: 22px; background: linear-gradient(180deg, var(--primary), var(--accent)); border-radius: 3px; }
+    body.dark .card h2 { color: #fff; }
+    .card p, .card .btn, .card input, .card canvas { transform: translateZ(10px); }
+    .card p { font-size: 17px; color: var(--text); margin: 6px 0; }
+    h3 { font-size: 19px; margin: 14px 0 6px; color: var(--text); font-weight: 700; }
+    body.dark h3 { color: #fff; }
+
+    .btn {
+      display: inline-block; padding: 11px 26px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; text-decoration: none; border-radius: 12px; border: none;
+      font-size: 16px; cursor: pointer; transition: all 0.25s; margin: 5px 6px 5px 0;
+      font-family: inherit; font-weight: 600; box-shadow: 0 4px 14px rgba(64,158,255,0.3);
+      position: relative; overflow: hidden;
+    }
+    .btn::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.5s; }
+    .btn:hover::after { transform: translateX(100%); }
+    .btn:hover, .btn:active { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(64,158,255,0.45); }
+    input, textarea, select {
+      padding: 12px 15px; border: 1px solid #ddd; border-radius: 12px; margin: 6px 0;
+      width: 280px; max-width: 100%; font-size: 16px; font-family: inherit; transition: all 0.2s;
+      background: rgba(255,255,255,0.8);
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.15); background: #fff; }
+    hr { margin: 36px 0; border: none; height: 2px; background: linear-gradient(to right, transparent, var(--primary), var(--accent), transparent); }
+    .quote { background: rgba(245,249,255,0.7); border-radius: 14px; padding: 18px 24px; margin: 16px 0; font-style: italic; color: #555; border-left: 4px solid var(--primary); }
+    .row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 280px; }
+
+    .fade-scroll { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
+    .fade-scroll.show { opacity: 1; transform: translateY(0); }
+
+    .flow-border {
+      width: 84%; max-width: 940px; margin: 34px auto; padding: 3px; border-radius: 22px;
+      background: linear-gradient(90deg, #0cf, #f08, #ff0, #0cf, #0cf);
+      background-size: 300% 300%; animation: flow 5s linear infinite;
+    }
+    @keyframes flow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+    .inner-content { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 20px; padding: 28px; }
+
+    #waveCanvas { width: 100%; height: 120px; background: rgba(0, 0, 0, 0.06); border-radius: 14px; margin-top: 12px; display: block; }
+
+    #imgModal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+    #imgModal img { max-width: 92%; max-height: 88%; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    #imgModal span { position: absolute; top: 20px; right: 28px; color: white; font-size: 44px; cursor: pointer; line-height: 1; }
+
+    .calc-wrap { max-width: 440px; margin-top: 12px; }
+    .calc-input { width: 100% !important; font-size: 22px !important; padding: 15px 18px !important; border-radius: 14px !important; border: 1px solid #c5d9f1; background: rgba(247,251,255,0.9); }
+    .calc-keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 16px 0; }
+    .calc-keyboard .btn { margin: 0; padding: 13px 0; font-size: 18px; border-radius: 12px; }
+    .calc-result-text { font-size: 20px; font-weight: bold; color: var(--primary); min-height: 34px; }
+
+    .wheel-wrap { display: flex; flex-wrap: wrap; gap: 26px; align-items: center; justify-content: center; }
+    #wheelCanvas { border-radius: 50%; box-shadow: 0 0 40px rgba(64, 158, 255, 0.4); max-width: 100%; height: auto; background: #fff; touch-action: manipulation; }
+    #wheelResult { font-size: 20px; font-weight: bold; color: var(--primary); min-height: 34px; margin-top: 12px; }
+
+    #drawCanvas { border: 2px dashed var(--primary); border-radius: 14px; cursor: crosshair; touch-action: none; max-width: 100%; display: block; background: #fff; }
+    .draw-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 14px 0; }
+    .draw-tools label { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+    .draw-tools input[type="color"] { width: 46px; height: 38px; border: none; cursor: pointer; padding: 0; background: transparent; }
+    .draw-tools input[type="range"] { width: 130px; }
+
+    .pomo-wrap { text-align: center; }
+    .pomo-display { font-size: clamp(44px, 10vw, 64px); font-weight: 800; color: var(--primary); letter-spacing: 4px; margin: 12px 0; font-variant-numeric: tabular-nums; }
+    .pomo-status { font-size: 18px; color: #666; min-height: 28px; margin: 10px 0; }
+
+    .accordion-item { border: 1px solid var(--border); border-radius: 14px; margin: 14px 0; overflow: hidden; background: rgba(255,255,255,0.6); transition: box-shadow 0.25s; }
+    .accordion-item.open { box-shadow: 0 4px 20px rgba(64, 158, 255, 0.15); }
+    .accordion-header { padding: 16px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 17px; font-weight: bold; color: var(--primary-dark); user-select: none; border-left: 5px solid var(--primary); }
+    .accordion-header:hover { background: rgba(240,247,255,0.6); }
+    .accordion-arrow { transition: transform 0.3s; font-size: 14px; }
+    .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+    .accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; padding: 0 20px; }
+    .accordion-item.open .accordion-body { padding: 14px 20px 20px; }
+
+    .dice-area { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+    .dice { width: 84px; height: 84px; background: #fff; border-radius: 18px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: #333; transition: transform 0.2s; border: 2px solid var(--primary); user-select: none; }
+    .dice.rolling { animation: roll 0.45s ease infinite; }
+    @keyframes roll { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(18deg) scale(1.08); } 50% { transform: rotate(-18deg) scale(1.08); } 75% { transform: rotate(10deg) scale(1.04); } 100% { transform: rotate(0deg) scale(1); } }
+
+    .mole-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 340px; margin: 18px auto; }
+    .mole-hole { width: 100%; aspect-ratio: 1; background: #d4edda; border-radius: 50%; position: relative; overflow: hidden; cursor: pointer; box-shadow: inset 0 8px 15px rgba(0,0,0,0.15); display: flex; align-items: flex-end; justify-content: center; }
+    .mole { font-size: 40px; transform: translateY(100%); transition: transform 0.15s ease-out; user-select: none; }
+    .mole.up { transform: translateY(0); animation: mole-pop 0.2s; }
+    @keyframes mole-pop { 0% { transform: translateY(20%) scale(0.8); } 100% { transform: translateY(0) scale(1); } }
+
+    .typography-showcase .demo-block { background: rgba(248,251,255,0.7); border-radius: 16px; padding: 24px 28px; margin: 20px 0; border: 1px solid rgba(226,237,255,0.8); }
+    .typography-showcase .demo-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 18px; display: inline-block; }
+    .text-emphasis { font-weight: 700; color: #d63384; }
+    .text-italic { font-style: italic; color: #6f42c1; }
+    .text-underline { text-decoration: underline wavy var(--primary) 2px; }
+    .text-highlight { background: linear-gradient(120deg, #fdd9b5 0%, #fdd9b5 40%, transparent 80%); padding: 0 4px; }
+    .list-custom { padding-left: 24px; }
+    .list-custom li { margin: 8px 0; font-size: 16px; }
+    .list-custom li::marker { color: var(--primary); font-weight: bold; }
+    .list-icon { list-style: none; padding-left: 0; }
+    .list-icon li { padding: 6px 0 6px 28px; position: relative; font-size: 16px; }
+    .list-icon li::before { content: "✨"; position: absolute; left: 0; }
+    .quote-modern { border-left: 6px solid var(--primary); border-radius: 0 14px 14px 0; padding: 20px; margin: 20px 0; font-style: normal; font-size: 16px; box-shadow: 0 2px 12px rgba(64,158,255,0.08); position: relative; background: rgba(245,249,255,0.7); }
+    .quote-modern::before { content: "“"; font-size: 48px; color: var(--primary); opacity: 0.3; position: absolute; left: 8px; top: -6px; font-family: serif; }
+    .tag-group { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+    .tag { display: inline-block; background: var(--primary-light); color: var(--primary-dark); padding: 6px 18px; border-radius: 30px; font-size: 14px; font-weight: 600; border: 1px solid #c5d9f1; transition: all 0.2s; }
+    .tag:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+    .code-block { background: #1e1e2e; color: #cdd6f4; padding: 16px 22px; border-radius: 14px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 15px; overflow-x: auto; margin: 14px 0; border-left: 4px solid var(--primary); white-space: pre-wrap; word-break: break-word; }
+    .code-block .comment { color: #6c7086; }
+    .code-block .keyword { color: #cba6f7; }
+    .code-block .string { color: #a6e3a1; }
+
+    #liveClock { font-size: clamp(44px, 9vw, 72px); font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-variant-numeric: tabular-nums; letter-spacing: 6px; }
+    #clockDate { font-size: 17px; color: #666; margin-top: 6px; letter-spacing: 1px; }
+
+    #diaryInput { width: 100%; max-width: 100%; min-height: 100px; resize: vertical; font-size: 16px; line-height: 1.8; }
+
+    .poem-line { font-size: 20px; line-height: 2; color: #2c3e50; font-style: italic; padding: 12px 0; letter-spacing: 1.5px; }
+    #poemAuthor { text-align: right; color: #888; font-size: 15px; margin-top: 4px; }
+
+    .stat-box { background: rgba(245,249,255,0.7); border-radius: 16px; padding: 20px 24px; margin: 14px 0; border: 1px solid rgba(226,237,255,0.8); display: flex; flex-wrap: wrap; gap: 16px 36px; }
+    .stat-item { display: flex; flex-direction: column; gap: 2px; }
+    .stat-label { font-size: 14px; color: #888; }
+    .stat-value { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .theme-swatches { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+    .theme-swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .theme-swatch:hover { transform: scale(1.1); }
+    .theme-swatch.active { border-color: var(--text); transform: scale(1.1); }
+
+    #dashboardCanvas { width: 100%; height: 220px; display: block; background: rgba(0,0,0,0.02); border-radius: 14px; margin-top: 12px; }
+
+    .task-item { display: flex; align-items: center; gap: 10px; background: rgba(245,249,255,0.6); border: 1px solid rgba(226,237,255,0.8); border-radius: 12px; padding: 10px 16px; margin: 8px 0; transition: all 0.2s; }
+    .task-item.done { opacity: 0.6; text-decoration: line-through; }
+    .task-item .task-check { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary); }
+    .task-item .task-text { flex: 1; font-size: 16px; }
+    .task-item .task-focus { padding: 4px 12px; font-size: 13px; }
+
+    .share-toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(26,28,44,0.95); color: #fff; padding: 14px 28px; border-radius: 30px; font-size: 15px; opacity: 0; pointer-events: none; transition: all 0.35s; z-index: 30000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .share-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ========== 新增：倒计时器 ========== */
+    .countdown-wrap { text-align: center; padding: 10px 0; }
+    .countdown-display { font-size: clamp(40px, 8vw, 64px); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 4px; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 10px 0; }
+    .countdown-inputs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
+    .countdown-inputs input { width: 80px; text-align: center; font-size: 20px; font-weight: 700; }
+    .countdown-inputs label { display: flex; flex-direction: column; align-items: center; font-size: 13px; color: #888; gap: 4px; }
+
+    /* ========== 新增：二维码生成器 ========== */
+    .qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 12px; }
+    #qrCanvas { border-radius: 12px; background: #fff; padding: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+    /* ========== 新增：汇率换算器 ========== */
+    .rate-wrap { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-top: 12px; }
+    .rate-wrap label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 600; }
+    .rate-wrap input, .rate-wrap select { width: 140px; }
+    .rate-result { font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 12px; }
+
+    /* ========== 新增：密码强度 ========== */
+    .pwd-meter { height: 8px; border-radius: 4px; background: #e0e0e0; margin: 10px 0; overflow: hidden; }
+    .pwd-meter-fill { height: 100%; width: 0%; border-radius: 4px; transition: all 0.3s; }
+    .pwd-tips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .pwd-tip { font-size: 13px; padding: 3px 10px; border-radius: 12px; background: #f0f0f0; color: #999; }
+    .pwd-tip.ok { background: rgba(67,233,123,0.15); color: #27ae60; }
+
+    /* ========== 新增：JSON 格式化 ========== */
+    .json-wrap { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+    .json-wrap textarea { flex: 1; min-width: 280px; height: 200px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+    .json-out { flex: 1; min-width: 280px; height: 200px; overflow: auto; background: #1e1e2e; color: #cdd6f4; border-radius: 12px; padding: 14px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+    .json-out .j-key { color: #89b4fa; }
+    .json-out .j-str { color: #a6e3a1; }
+    .json-out .j-num { color: #fab387; }
+    .json-out .j-bool { color: #cba6f7; }
+    .json-out .j-null { color: #6c7086; }
+
+    @media (max-width: 768px) {
+      body { padding: calc(var(--nav-height) + 18px) 14px 44px; }
+      .card { padding: 20px; margin: 16px auto; border-radius: 16px; transform: none !important; }
+      .card h2 { font-size: 20px; }
+      .card p { font-size: 16px; }
+      .btn { padding: 10px 20px; font-size: 15px; }
+      input, textarea, select { width: 100%; }
+      .flow-border { width: 100%; margin: 22px auto; }
+      .calc-keyboard { grid-template-columns: repeat(4, 1fr); }
+      #wheelCanvas { width: 260px !important; height: 260px !important; }
+      #drawCanvas { height: 280px !important; }
+      .nav-bar button { padding: 6px 12px; font-size: 13px; }
+      .nav-bar .nav-title { font-size: 14px; }
+      .dice { width: 66px; height: 66px; font-size: 38px; }
+      .row { gap: 16px; }
+      #liveClock { font-size: 40px; letter-spacing: 4px; }
+    }
+    @media (max-width: 420px) {
+      .nav-bar button { padding: 5px 10px; font-size: 12px; }
+      .type-title { font-size: 26px; }
+      #liveClock { font-size: 34px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="fade">
+  <div id="progressBar"></div>
+
+  <nav class="nav-bar" aria-label="页面导航">
+    <span class="nav-title">🚀 导航栏</span>
+    <button onclick="scrollToCard('card-theme')">🎨 主题</button>
+    <button onclick="scrollToCard('card-dashboard')">📊 仪表盘</button>
+    <button onclick="scrollToCard('card-clock')">🕐 时钟</button>
+    <button onclick="scrollToCard('card-pomo-task')">⏰ 番茄任务</button>
+    <button onclick="scrollToCard('card-countdown')">⏳ 倒计时</button>
+    <button onclick="scrollToCard('card-qr')">📱 二维码</button>
+    <button onclick="scrollToCard('card-rate')">💱 汇率</button>
+    <button onclick="scrollToCard('card-pwd')">🔐 密码</button>
+    <button onclick="scrollToCard('card-json')">🧩 JSON</button>
+    <button onclick="scrollToCard('card-wheel')">🎡 转盘</button>
+    <button onclick="scrollToCard('card-draw')">🎨 画板</button>
+    <button onclick="scrollToCard('card-calc')">🧮 计算器</button>
+    <button onclick="scrollToCard('card-msg')">📝 留言</button>
+    <button onclick="scrollToCard('card-game')">🎮 游戏</button>
+    <button onclick="sharePage()" style="background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;">🔗 分享</button>
+  </nav>
+
+  <div class="light-ring" id="ring"></div>
+  <canvas id="starCanvas"></canvas>
+  <canvas id="partCanvas"></canvas>
+
+  <div id="imgModal" role="dialog" aria-modal="true" aria-label="图片预览">
+    <span onclick="closeImg()" aria-label="关闭">×</span>
+    <img id="bigImg" alt="放大图片">
+  </div>
+
+  <button id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="回到顶部">↑</button>
+
+  <div class="share-toast" id="shareToast">🔗 链接已复制到剪贴板！</div>
+
+  <div style="text-align:center; padding: 14px 0;">
+    <span class="type-title" id="typeText"></span>
+    <span class="cursor"></span>
+  </div>
+  <p style="text-align:center; font-size: clamp(15px,2.5vw,19px); color:#555; margin-bottom:30px;">
+    欢迎老师、同学们浏览我的网页作品！点击导航栏「🔗 分享」可以把页面分享给朋友～
+  </p>
+
+  <div class="flow-border fade-scroll">
+    <div class="inner-content">
+      <h3>👋 欢迎参观我的网页作品</h3>
+      <p>这是我自学前端写出来的静态网站，包含音乐、交互特效、小游戏、数据仪表盘、二维码、汇率换算等实用工具。</p>
+      <p>感谢老师、同学们观看！</p>
+    </div>
+  </div>
+
+  <div class="card fade-scroll" id="card-theme">
+    <h2>🎨 色调自定义</h2>
+    <p>点击色块切换全站主色调，渐变、按钮、时钟、图表会同步更新。</p>
+    <div class="theme-swatches" id="themeSwatches">
+      <div class="theme-swatch active" style="background:linear-gradient(135deg,#409eff,#a855f7)" data-primary="#409eff" data-accent="#a855f7" onclick="setTheme(this)"></div>
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#f5576c,#f093fb)" data-primary="#f5576c" data-accent="#f093fb" onclick="setTheme(this)"></div>
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#43e97b,#38f9d7)" data-primary="#43e97b" data-accent="#38f9d7" onclick="setTheme(this)"></div>
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#fa709a,#fee140)" data-primary="#fa709a" data-accent="#fee140" onclick="setTheme(this)"></div>
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#30cfd0,#330867)" data-primary="#30cfd0" data-accent="#330867" onclick="setTheme(this)"></div>
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#667eea,#764ba2)" data-primary="#667eea" data-accent="#764ba2" onclick="setTheme(this)"></div>
+    </div>
+    <button onclick="toggleDark()" class="btn" style="margin-top:12px;">🌓 切换深色/浅色</button>
+  </div>
+
+  <div class="card fade-scroll" id="card-dashboard">
+    <h2>📊 数据仪表盘</h2>
+    <p>实时展示页面访问、留言、心情、停留时间等数据，下方 Canvas 绘制近 7 天访问趋势。</p>
+    <div class="stat-box">
+      <div class="stat-item"><span class="stat-label">访问次数</span><span class="stat-value" id="statVisit">0</span></div>
+      <div class="stat-item"><span class="stat-label">留言数量</span><span class="stat-value" id="statMsg">0</span></div>
+      <div class="stat-item"><span class="stat-label">今日心情</span><span class="stat-value" id="statMood">😊</span></div>
+      <div class="stat-item"><span class="stat-label">页面停留</span><span class="stat-value" id="statStay">0s</span></div>
+    </div>
+    <canvas id="dashboardCanvas"></canvas>
+    <p style="font-size:14px;color:#888;margin-top:8px;">* 图表数据根据访问次数与停留时间动态生成，仅作演示。</p>
+  </div>
+
+  <div class="card fade-scroll" id="card-clock" style="text-align:center;">
+    <h2>⏰ 实时动态时钟</h2>
+    <div id="liveClock">--:--:--</div>
+    <p id="clockDate"></p>
+    <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:14px;">
+      <span class="tag">📅 今日日期</span>
+      <span class="tag">⏱️ 实时更新</span>
+      <span class="tag">🌓 支持暗黑</span>
+    </div>
+  </div>
+
+  <div class="card fade-scroll" id="card-pomo-task">
+    <h2>⏰ 番茄钟 + 任务联动</h2>
+    <p>把要做的事加到任务列表，点击「专注」自动开始 25 分钟番茄钟，完成后自动标记任务。</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+      <input id="taskInput" placeholder="输入任务，例如：复习数学" style="flex:1; min-width:200px;">
+      <button class="btn" onclick="addTask()">➕ 添加任务</button>
+    </div>
+    <div id="taskList"></div>
+    <hr style="margin:20px 0;">
+    <div class="pomo-wrap">
+      <div class="pomo-display" id="pomoDisplay">25:00</div>
+      <p class="pomo-status" id="pomoStatus">准备开始专注吧～</p>
+      <button class="btn" id="pomoStartBtn" onclick="pomoToggle()">▶ 开始</button>
+      <button class="btn" onclick="pomoReset()">🔄 重置</button>
+    </div>
+  </div>
+
+  <!-- ========== 新增：倒计时器 ========== -->
+  <div class="card fade-scroll" id="card-countdown">
+    <h2>⏳ 倒计时器</h2>
+    <p>设定时、分、秒，点击开始倒计时。可暂停、继续、重置。</p>
+    <div class="countdown-wrap">
+      <div class="countdown-display" id="countdownDisplay">00:00:00</div>
+      <div class="countdown-inputs">
+        <label>时<input type="number" id="cdH" min="0" max="99" value="0"></label>
+        <label>分<input type="number" id="cdM" min="0" max="59" value="5"></label>
+        <label>秒<input type="number" id="cdS" min="0" max="59" value="0"></label>
+      </div>
+      <button class="btn" id="cdStartBtn" onclick="cdToggle()">▶ 开始</button>
+      <button class="btn" onclick="cdReset()">🔄 重置</button>
+      <p id="cdStatus" style="color:#888; min-height:24px;"></p>
+    </div>
+  </div>
+
+  <!-- ========== 新增：二维码生成器 ========== -->
+  <div class="card fade-scroll" id="card-qr">
+    <h2>📱 二维码生成器</h2>
+    <p>输入文本或链接，点击生成二维码，可保存为图片。</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <input id="qrInput" placeholder="输入文本或链接…" style="flex:1; min-width:220px;" value="https://www.baidu.com">
+      <button class="btn" onclick="generateQR()">✨ 生成二维码</button>
+      <button class="btn" onclick="saveQR()" style="background:#27ae60;">💾 保存图片</button>
+    </div>
+    <div class="qr-wrap">
+      <canvas id="qrCanvas" width="220" height="220"></canvas>
+      <p style="font-size:13px;color:#888;">二维码由 Canvas 本地生成，无需联网</p>
+    </div>
+  </div>
+
+  <!-- ========== 新增：汇率换算器 ========== -->
+  <div class="card fade-scroll" id="card-rate">
+    <h2>💱 汇率换算器</h2>
+    <p>输入金额，选择币种，按内置参考汇率换算（离线演示，非实时汇率）。</p>
+    <div class="rate-wrap">
+      <label>金额<input id="rateAmount" type="number" value="100" min="0"></label>
+      <label>从<select id="rateFrom">
+        <option value="CNY">人民币 CNY</option>
+        <option value="USD">美元 USD</option>
+        <option value="EUR">欧元 EUR</option>
+        <option value="JPY">日元 JPY</option>
+        <option value="GBP">英镑 GBP</option>
+        <option value="HKD">港币 HKD</option>
+      </select></label>
+      <label>到<select id="rateTo">
+        <option value="USD">美元 USD</option>
+        <option value="CNY">人民币 CNY</option>
+        <option value="EUR">欧元 EUR</option>
+        <option value="JPY">日元 JPY</option>
+        <option value="GBP">英镑 GBP</option>
+        <option value="HKD">港币 HKD</option>
+      </select></label>
+      <button class="btn" onclick="convertRate()">换算</button>
+    </div>
+    <p class="rate-result" id="rateResult">—</p>
+    <p style="font-size:13px;color:#888;">参考汇率：1 CNY ≈ 0.138 USD / 0.128 EUR / 21.5 JPY / 0.108 GBP / 1.08 HKD</p>
+  </div>
+
+  <!-- ========== 新增：密码强度检测 ========== -->
+  <div class="card fade-scroll" id="card-pwd">
+    <h2>🔐 密码强度检测</h2>
+    <p>输入密码，实时评估强度并给出改进建议（本地检测，不上传）。</p>
+    <input id="pwdInput" type="password" placeholder="输入密码…" style="width:100%; max-width:420px;" oninput="checkPwd()">
+    <div class="pwd-meter"><div class="pwd-meter-fill" id="pwdFill"></div></div>
+    <p id="pwdLabel" style="font-weight:700; min-height:26px;"></p>
+    <div class="pwd-tips" id="pwdTips"></div>
+  </div>
+
+  <!-- ========== 新增：JSON 格式化 ========== -->
+  <div class="card fade-scroll" id="card-json">
+    <h2>🧩 JSON 格式化 / 压缩</h2>
+    <p>粘贴 JSON 文本，点击格式化或压缩，右侧实时高亮预览。</p>
+    <div class="json-wrap">
+      <textarea id="jsonInput" placeholder='{"name":"GSD明轩","age":18,"skills":["HTML","CSS","JS"]}'></textarea>
+      <div class="json-out" id="jsonOut">格式化结果将显示在这里…</div>
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn" onclick="formatJSON()">✨ 格式化</button>
+      <button class="btn" onclick="minifyJSON()" style="background:#6c757d;">📦 压缩</button>
+      <button class="btn" onclick="copyJSON()" style="background:#27ae60;">📋 复制结果</button>
+    </div>
+  </div>
+
+  <div class="card fade-scroll" id="card-wheel">
+    <h2>🎡 幸运大转盘</h2>
+    <p>点击下方按钮，看看今天的手气如何～</p>
+    <div class="wheel-wrap">
+      <canvas id="wheelCanvas" width="320" height="320"></canvas>
+      <div>
+        <button class="btn" id="spinBtn" onclick="spinWheel()">🎲 开始抽奖</button>
+        <p id="wheelResult"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card fade-scroll" id="card-draw">
+    <h2>🎨 自由画板</h2>
+    <p>用鼠标或手指在下面画画吧～ 支持橡皮擦</p>
+    <div class="draw-tools">
+      <label>颜色 <input type="color" id="drawColor" value="#409eff"></label>
+      <label>粗细 <input type="range" id="drawSize" min="1" max="30" value="4"></label>
+      <button class="btn" id="eraserBtn" onclick="toggleEraser()" style="background:#6c757d;">🧽 橡皮擦</button>
+      <button class="btn" onclick="clearDraw()">🧹 清空</button>
+      <button class="btn" onclick="saveDraw()">💾 保存图片</button>
+    </div>
+    <canvas id="drawCanvas" width="900" height="400"></canvas>
+  </div>
+
+  <div class="card fade-scroll" id="card-calc">
+    <h2>🧮 分数计算器</h2>
+    <p>格式示例：1/2+1/3  支持 + - * / ，支持负数如 -2/1*648</p>
+    <div class="calc-wrap">
+      <input id="calcInput" class="calc-input" placeholder="输入分数算式">
+      <div class="calc-keyboard">
+        <button onclick="inputNum('7')" class="btn">7</button>
+        <button onclick="inputNum('8')" class="btn">8</button>
+        <button onclick="inputNum('9')" class="btn">9</button>
+        <button onclick="inputNum('/')" class="btn">/</button>
+        <button onclick="inputNum('4')" class="btn">4</button>
+        <button onclick="inputNum('5')" class="btn">5</button>
+        <button onclick="inputNum('6')" class="btn">6</button>
+        <button onclick="inputNum('*')" class="btn">×</button>
+        <button onclick="inputNum('1')" class="btn">1</button>
+        <button onclick="inputNum('2')" class="btn">2</button>
+        <button onclick="inputNum('3')" class="btn">3</button>
+        <button onclick="inputNum('-')" class="btn">-</button>
+        <button onclick="inputNum('0')" class="btn">0</button>
+        <button onclick="inputNum('.')" class="btn">.</button>
+        <button onclick="inputNum('+')" class="btn">+</button>
+        <button onclick="clearCalc()" class="btn" style="background:#ff6b6b;">清空</button>
+        <button onclick="calc()" class="btn" style="grid-column: span 3; background:#27ae60;">= 计算</button>
+      </div>
+      <p class="calc-result-text">结果：<span id="calcResult"></span></p>
+    </div>
+  </div>
+
+  <div class="card fade-scroll" id="card-msg">
+    <h2>📝 留言板（本地保存）</h2>
+    <input id="msgName" placeholder="你的名字">
+    <br>
+    <input id="msgContent" placeholder="写下留言">
+    <br>
+    <button onclick="addMsg()" class="btn">提交留言</button>
+    <div id="msgList" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="card fade-scroll" id="card-diary">
+    <h2>📔 今日小记（本地保存）</h2>
+    <p>记录下今天的心情或想法，自动保存至浏览器。</p>
+    <textarea id="diaryInput" rows="4" placeholder="写点什么吧…"></textarea>
+    <br>
+    <button class="btn" onclick="saveDiary()">💾 保存小记</button>
+    <button class="btn" onclick="loadDiary()">📂 读取小记</button>
+    <button class="btn" onclick="clearDiary()" style="background:#ff6b6b;">🗑️ 清除</button>
+    <p id="diaryStatus" style="color: var(--primary); margin-top: 8px;"></p>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>📜 今日诗词</h2>
+    <p class="poem-line" id="poemLine">点击下方按钮，获取一句诗词</p>
+    <p id="poemAuthor"></p>
+    <button class="btn" onclick="randomPoem()">📖 换一句诗词</button>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>🎲 幸运骰子</h2>
+    <div class="dice-area">
+      <div id="dice1" class="dice">⚀</div>
+      <div id="dice2" class="dice">⚀</div>
+      <button onclick="rollDice()" class="btn">掷骰子</button>
+    </div>
+    <p id="diceResult" style="margin-top:14px;font-size:20px;font-weight:bold;"></p>
+  </div>
+
+  <div class="card fade-scroll" id="card-game">
+    <h2>🎮 猜数字小游戏</h2>
+    <p>我想好1~10之间一个数字，你来猜猜</p>
+    <input id="guessNum" type="number" placeholder="输入数字" inputmode="numeric" style="width:180px;">
+    <button onclick="checkGuess()" class="btn">提交答案</button>
+    <p id="tip"></p>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>🐹 打地鼠小游戏</h2>
+    <p>30秒内尽可能多地点击冒头的地鼠！难度会逐渐增加哦～</p>
+    <div style="display: flex; justify-content: space-between; max-width: 320px; margin: 12px auto; font-weight: bold; font-size: 18px;">
+      <span>得分：<span id="moleScore" style="color: var(--primary);">0</span></span>
+      <span>时间：<span id="moleTime" style="color: #ff6b6b;">30</span>s</span>
+    </div>
+    <div class="mole-grid" id="moleGrid"></div>
+    <div style="text-align: center;">
+      <button class="btn" id="moleStartBtn" onclick="startMoleGame()">▶ 开始游戏</button>
+    </div>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>✊✌️🖐️ 石头剪刀布</h2>
+    <button onclick="playGame('rock')" class="btn">石头</button>
+    <button onclick="playGame('scissors')" class="btn">剪刀</button>
+    <button onclick="playGame('paper')" class="btn">布</button>
+    <p id="rpsResult" style="font-size:20px;margin-top:12px;"></p>
+  </div>
+
+  <div class="card fade-scroll" id="card-music">
+    <h2>🎵 背景音乐</h2>
+    <p onclick="playMusic()" style="color:var(--primary);cursor:pointer;font-size:19px;font-weight:bold;">
+      ▶ 点击我 播放/暂停 背景音乐
+    </p>
+    <canvas id="waveCanvas"></canvas>
+    <audio id="bgm" loop preload="none">
+      <source src="music.mp3" type="audio/mpeg">
+      您的浏览器不支持音频播放
+    </audio>
+  </div>
+
+  <div class="card fade-scroll" id="card-time">
+    <h2>🕒 当前时间</h2>
+    <p id="time" style="font-size:22px;font-weight:bold;"></p>
+  </div>
+  <div class="card fade-scroll">
+    <h2>⏱️ 简易秒表</h2>
+    <p id="stopwatch" style="font-size:24px;font-weight:bold;font-variant-numeric:tabular-nums;">00:00:00</p>
+    <button onclick="startTimer()" class="btn">开始</button>
+    <button onclick="pauseTimer()" class="btn">暂停</button>
+    <button onclick="resetTimer()" class="btn">清零</button>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>💬 随机寄语（分类）</h2>
+    <select id="quoteType" class="btn" style="width:auto;">
+      <option value="inspire">励志</option>
+      <option value="literature">文艺</option>
+    </select>
+    <p id="msg" style="font-size:18px;color:var(--primary);min-height:38px;">点下方按钮获取寄语✨</p>
+    <button onclick="changeWord()" class="btn">换一句寄语</button>
+  </div>
+  <div class="card fade-scroll">
+    <h2>🖱️ 交互按钮演示</h2>
+    <button class="btn" onclick="alert('我就是明轩，你点了按钮！🎉')">点我弹出提示</button>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>🖼️ 图片展示（点击放大）</h2>
+    <img src="logo.jpg" onclick="openImg(this.src)" alt="插画"
+      style="width:380px;max-width:100%;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.12);cursor:pointer;">
+    <p style="margin-top:14px;color:#666;">
+      这是我很喜欢的一幅插画。从零基础开始学习 HTML，一点点编写代码、调试页面，亲手完成了这个网页作品。
+    </p>
+  </div>
+  <div class="card fade-scroll">
+    <h2>🎬 视频模块</h2>
+    <video width="100%" style="border-radius:14px;" controls preload="metadata">
+      <source src="video.mp4" type="video/mp4">
+      浏览器不支持视频播放
+    </video>
+    <p style="margin-top:16px;font-size:17px;color:#333;line-height:1.8;">
+      我是GSD明轩，这是我自己动手制作的网页作品。通过学习HTML和CSS，实现了页面排版、卡片样式以及视频播放功能。
+    </p>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>🎨 颜色猜猜看</h2>
+    <p>看下方色块，输入rgb三个数字猜颜色</p>
+    <div id="colorBox" style="width:120px;height:120px;border-radius:12px;margin:12px 0;box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+    <input id="rIn" placeholder="R(0-255)" inputmode="numeric" style="width:110px;">
+    <input id="gIn" placeholder="G(0-255)" inputmode="numeric" style="width:110px;">
+    <input id="bIn" placeholder="B(0-255)" inputmode="numeric" style="width:110px;">
+    <br>
+    <button onclick="checkColor()" class="btn">提交猜测</button>
+    <button onclick="newColor()" class="btn">换颜色</button>
+    <p id="colorTip"></p>
+  </div>
+  <div class="card fade-scroll">
+    <h2>⏳ 简易时间胶囊</h2>
+    <p>写一段话，设置解锁日期，到时间才能查看</p>
+    <input id="capsuleText" placeholder="写下留给未来的话">
+    <br>
+    <input id="capsuleDate" type="date">
+    <br>
+    <button onclick="saveCapsule()" class="btn">保存胶囊</button>
+    <button onclick="readCapsule()" class="btn">查看胶囊</button>
+    <p id="capsuleResult"></p>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>🎨 切换背景颜色</h2>
+    <p>点击按钮切换背景，暗黑模式下自动变为对应的深色</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button onclick="changeBg(0)" class="btn" style="background: #ffd6e8; color: #333;">🌸 粉色</button>
+      <button onclick="changeBg(1)" class="btn" style="background: linear-gradient(120deg,#a1c4fd,#c2e9fb); color: #333;">💙 浅蓝</button>
+      <button onclick="changeBg(2)" class="btn" style="background: #d4edda; color: #333;">🌿 浅绿</button>
+      <button onclick="changeBg(3)" class="btn" style="background: #fff3cd; color: #333;">🌞 鹅黄</button>
+      <button onclick="changeBg(4)" class="btn" style="background: #e2d1f9; color: #333;">💜 淡紫</button>
+      <button onclick="changeBg(5)" class="btn" style="background: #fdd9b5; color: #333;">🍑 蜜桃</button>
+    </div>
+  </div>
+  <div class="card fade-scroll">
+    <h2>📋 待办清单</h2>
+    <input id="todoInput" placeholder="输入要做的事" style="width:240px;">
+    <button onclick="addTodo()" class="btn">添加</button>
+    <ul id="todoList" style="margin-top:12px; padding-left:20px;"></ul>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>👀 访问次数</h2>
+    <p>本页面已经被访问：<span id="count" style="font-weight:bold;color:var(--primary);">0</span> 次</p>
+    <button onclick="resetCount()" class="btn">重置访问次数</button>
+  </div>
+  <div class="card fade-scroll">
+    <h2>⌨️ 打字测速</h2>
+    <p>原文：<span id="typeOrigin">编程是一场有趣的旅途，坚持练习就能不断进步。</span></p>
+    <textarea id="typeTestArea" placeholder="在这里输入上面这段文字，开始测速"></textarea>
+    <br>
+    <button onclick="startTypeTest()" class="btn">开始测速</button>
+    <button onclick="endTypeTest()" class="btn">结束测速</button>
+    <p id="typeResult"></p>
+  </div>
+
+  <div class="card fade-scroll">
+    <h2>🖱️ 实时鼠标坐标</h2>
+    <p>X: <span id="mouseX" style="font-weight:bold;color:var(--primary);">0</span> , Y: <span id="mouseY" style="font-weight:bold;color:var(--primary);">0</span></p>
+  </div>
+  <div class="card fade-scroll">
+    <h2>⌨️ 键盘按键监听</h2>
+    <p>按任意键：<span id="keyPressed" style="font-size:24px;font-weight:bold;color:var(--primary);">-</span></p>
+  </div>
+
+  <div class="card fade-scroll typography-showcase">
+    <h2>📖 排版组件展示</h2>
+    <div class="demo-block">
+      <div class="demo-title">文字强调与样式</div>
+      <p><strong>加粗文字</strong> &nbsp; <span class="text-italic">斜体文字</span> &nbsp; <span class="text-emphasis">重要强调</span> &nbsp; <span class="text-underline">波浪下划线</span> &nbsp; <span class="text-highlight">高亮背景</span></p>
+    </div>
+    <div class="demo-block">
+      <div class="demo-title">引用框 & 标签组</div>
+      <div class="quote-modern">
+        学习编程就像搭积木，每一行代码都是未来的基石。<br>
+        <span style="font-size: 14px; color: #888; margin-top: 8px; display: inline-block;">—— GSD明轩</span>
+      </div>
+      <div class="tag-group">
+        <span class="tag">HTML5</span>
+        <span class="tag">CSS3</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">Canvas</span>
+        <span class="tag">localStorage</span>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div class="fade-scroll" style="text-align:center;padding:28px 10px;">
+    <h2 style="border:none;font-size:20px;line-height:1.6;justify-content:center;">
+      🙏 最后感谢所有帮忙测试、寻找BUG的小伙伴！
+    </h2>
+    <p style="margin-top:10px;">本网页作品到此结束，欢迎继续体验页面所有交互功能✨</p>
+  </div>
+
+<script>
+(function() {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const $$ = sel => document.querySelectorAll(sel);
+
+  // ==================== 主题色工具 ====================
+  function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const n = parseInt(hex, 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  }
+
+  window.setTheme = function(el) {
+    const primary = el.dataset.primary;
+    const accent = el.dataset.accent;
+    const { r, g, b } = hexToRgb(primary);
+    const dark = rgbToHex(r * 0.75, g * 0.75, b * 0.75);
+    const light = rgbToHex(r * 0.1 + 255 * 0.9, g * 0.1 + 255 * 0.9, b * 0.1 + 255 * 0.9);
+
+    const root = document.documentElement;
+    root.style.setProperty('--primary', primary);
+    root.style.setProperty('--primary-dark', dark);
+    root.style.setProperty('--primary-light', light);
+    root.style.setProperty('--accent', accent);
+
+    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+
+    if (typeof drawWheel === 'function') drawWheel(wheelAngle || 0);
+    if (typeof drawDashboard === 'function') drawDashboard();
+  };
+
+  // ==================== 3D 悬浮倾斜卡片特效 ====================
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  if (!isTouchDevice) {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -5;
+        const rotateY = ((x - centerX) / centerX) * 5;
+        card.style.transform = `perspective(1400px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.008, 1.008, 1.008)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1400px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      });
+    });
+  }
+
+  // ==================== 导航平滑滚动 ====================
+  window.scrollToCard = function(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
+
+  // ==================== 进度条 ====================
+  const progressBar = $('progressBar');
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      progressBar.style.width = scrolled + '%';
+      scrollTicking = false;
+    });
+  }, { passive: true });
+
+  // ==================== 标签页标题 ====================
+  const originTitle = document.title;
+  window.addEventListener('blur', () => { document.title = '👋 别走呀'; });
+  window.addEventListener('focus', () => { document.title = originTitle; });
+
+  // ==================== 背景切换 ====================
+  const bgList = [
+    { light: '#ffd6e8', dark: '#3b242c' },
+    { light: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #e0c3fc 100%)', dark: '#0f0f1a' },
+    { light: '#d4edda', dark: '#1c362b' },
+    { light: '#fff3cd', dark: '#3a3524' },
+    { light: '#e2d1f9', dark: '#2c2438' },
+    { light: '#fdd9b5', dark: '#3a2e24' }
+  ];
+  let colorIndex = 1;
+
+  function applyBg(index) {
+    document.body.style.background = document.body.classList.contains('dark')
+      ? bgList[index].dark : bgList[index].light;
+  }
+
+  window.changeBg = function(index) {
+    colorIndex = index;
+    applyBg(index);
+  };
+
+  window.toggleDark = function() {
+    document.body.classList.toggle('dark');
+    applyBg(colorIndex);
+  };
+
+  // ==================== 鼠标光晕 + 坐标 ====================
+  const ring = $('ring');
+  let mouseTicking = false;
+  document.addEventListener('mousemove', e => {
+    if (!mouseTicking) {
+      mouseTicking = true;
+      requestAnimationFrame(() => {
+        ring.style.left = e.clientX + 'px';
+        ring.style.top = e.clientY + 'px';
+        const mx = $('mouseX'), my = $('mouseY');
+        if (mx) mx.innerText = e.clientX;
+        if (my) my.innerText = e.clientY;
+        mouseTicking = false;
+      });
+    }
+  }, { passive: true });
+
+  // ==================== 星空 ====================
+  const canvasStar = $('starCanvas');
+  const ctxStar = canvasStar.getContext('2d');
+  let stars = [];
+  function initStars() {
+    canvasStar.width = window.innerWidth;
+    canvasStar.height = window.innerHeight;
+    stars = Array.from({ length: 220 }, () => ({
+      x: Math.random() * canvasStar.width,
+      y: Math.random() * canvasStar.height,
+      r: Math.random() * 1.2 + 0.2,
+      speed: Math.random() * 0.4 + 0.1,
+      alpha: Math.random() * 0.6 + 0.2
+    }));
+  }
+  let starAnimationId = null;
+  function drawStars() {
+    ctxStar.clearRect(0, 0, canvasStar.width, canvasStar.height);
+    stars.forEach(s => {
+      ctxStar.beginPath();
+      ctxStar.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctxStar.fillStyle = `rgba(255,255,255,${s.alpha})`;
+      ctxStar.fill();
+      s.y += s.speed;
+      if (s.y > canvasStar.height) { s.y = 0; s.x = Math.random() * canvasStar.width; }
+    });
+    starAnimationId = requestAnimationFrame(drawStars);
+  }
+  initStars();
+  drawStars();
+  let starResizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(starResizeTimer);
+    starResizeTimer = setTimeout(() => {
+      canvasStar.width = window.innerWidth;
+      canvasStar.height = window.innerHeight;
+    }, 150);
+  });
+
+  // ==================== 粒子 ====================
+  const canvas = $('partCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.r = Math.random() * 2 + 1;
+      this.speedX = Math.random() * 0.6 - 0.3;
+      this.speedY = Math.random() * 0.6 - 0.3;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(64,158,255,0.22)';
+      ctx.fill();
+    }
+  }
+  function initParticles() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    particles = Array.from({ length: 55 }, () => new Particle());
+  }
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animateParticles);
+  }
+  initParticles();
+  animateParticles();
+  let partResizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(partResizeTimer);
+    partResizeTimer = setTimeout(() => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }, 150);
+  });
+
+  // ==================== 鼠标拖尾 + 点击特效 ====================
+  const starTrailList = [];
+  let trailTicking = false;
+  let lastTrailX = 0, lastTrailY = 0;
+  document.addEventListener('mousemove', e => {
+    if (Math.abs(e.clientX - lastTrailX) < 8 && Math.abs(e.clientY - lastTrailY) < 8) return;
+    lastTrailX = e.clientX; lastTrailY = e.clientY;
+    if (!trailTicking) {
+      trailTicking = true;
+      requestAnimationFrame(() => {
+        const star = document.createElement('div');
+        star.className = 'star-trail';
+        const size = Math.random() * 6 + 2;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = lastTrailX + 'px';
+        star.style.top = lastTrailY + 'px';
+        const hue = Math.random() * 360;
+        star.style.background = `hsl(${hue},80%,70%)`;
+        star.style.boxShadow = `0 0 8px hsl(${hue},80%,70%)`;
+        document.body.appendChild(star);
+        starTrailList.push(star);
+        if (starTrailList.length > 25) starTrailList.shift().remove();
+        setTimeout(() => star.remove(), 200);
+        trailTicking = false;
+      });
+    }
+  }, { passive: true });
+
+  document.addEventListener('click', e => {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.innerText = '❤️';
+    heart.style.left = e.clientX + 'px';
+    heart.style.top = e.clientY + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 800);
+
+    for (let i = 0; i < 10; i++) {
+      const p = document.createElement('div');
+      p.className = 'click-particle';
+      const size = Math.random() * 6 + 3;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = e.clientX + 'px';
+      p.style.top = e.clientY + 'px';
+      const hue = Math.random() * 360;
+      p.style.background = `hsl(${hue},85%,65%)`;
+      p.style.boxShadow = `0 0 6px hsl(${hue},85%,65%)`;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 80 + 40;
+      const tx = Math.cos(angle) * speed;
+      const ty = Math.sin(angle) * speed;
+      p.animate([
+        { transform: 'translate(0,0)', opacity: 1 },
+        { transform: `translate(${tx}px,${ty}px)`, opacity: 0 }
+      ], { duration: 600, easing: 'ease-out' });
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 600);
+    }
+  });
+
+  // ==================== 滚动渐入 ====================
+  const fadeCards = $$('.fade-scroll');
+  const showCard = (card) => {
+    const rect = card.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 60) card.classList.add('show');
+  };
+  let fadeTicking = false;
+  window.addEventListener('scroll', () => {
+    if (fadeTicking) return;
+    fadeTicking = true;
+    requestAnimationFrame(() => {
+      fadeCards.forEach(showCard);
+      fadeTicking = false;
+    });
+  }, { passive: true });
+
+  // ==================== 雪花 ====================
+  let snowTimer = null;
+  function createSnow() {
+    const snow = document.createElement('div');
+    snow.className = 'snow';
+    snow.innerText = '❄';
+    snow.style.left = Math.random() * 100 + 'vw';
+    snow.style.animationDuration = (5 + Math.random() * 6) + 's';
+    document.body.appendChild(snow);
+    setTimeout(() => snow.remove(), 11000);
+  }
+  function startSnow() {
+    if (snowTimer) clearInterval(snowTimer);
+    snowTimer = setInterval(createSnow, 450);
+  }
+  startSnow();
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (snowTimer) clearInterval(snowTimer); }
+    else startSnow();
+  });
+
+  // ==================== 打字机 ====================
+  const titleStr = '✨ GSD明轩的第一个网页 ✨';
+  let typeIndex = 0;
+  const typeDom = $('typeText');
+  function typeWrite() {
+    if (typeIndex < titleStr.length) {
+      typeDom.innerText += titleStr[typeIndex];
+      typeIndex++;
+      setTimeout(typeWrite, 120);
+    }
+  }
+
+  // ==================== 分享链接 ====================
+  window.sharePage = function() {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(showShareToast).catch(() => fallbackCopy(url));
+    } else {
+      fallbackCopy(url);
+    }
+  };
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showShareToast(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  function showShareToast() {
+    const t = $('shareToast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ==================== 访问计数 ====================
+  function updateVisitCount() {
+    let num = Number(localStorage.getItem('visit') || 0) + 1;
+    localStorage.setItem('visit', num);
+    $('count').innerText = num;
+    const statVisit = $('statVisit');
+    if (statVisit) statVisit.innerText = num;
+  }
+
+  // ==================== 图片弹窗 ====================
+  window.openImg = function(src) {
+    $('bigImg').src = src;
+    $('imgModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeImg = function() {
+    $('imgModal').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+  $('imgModal').addEventListener('click', function(e) {
+    if (e.target === this) window.closeImg();
+  });
+
+  // ==================== 回到顶部 ====================
+  let backTopTicking = false;
+  window.addEventListener('scroll', () => {
+    if (backTopTicking) return;
+    backTopTicking = true;
+    requestAnimationFrame(() => {
+      $('backTop').style.display = window.scrollY > 300 ? 'block' : 'none';
+      backTopTicking = false;
+    });
+  }, { passive: true });
+
+  // ==================== 秒表 ====================
+  let timerId = null, timeVal = 0;
+  window.startTimer = function() {
+    if (timerId) return;
+    timerId = setInterval(() => {
+      timeVal++;
+      const h = String(Math.floor(timeVal / 3600)).padStart(2, '0');
+      const m = String(Math.floor((timeVal % 3600) / 60)).padStart(2, '0');
+      const s = String(timeVal % 60).padStart(2, '0');
+      $('stopwatch').innerText = `${h}:${m}:${s}`;
+    }, 1000);
+  };
+  window.pauseTimer = function() { clearInterval(timerId); timerId = null; };
+  window.resetTimer = function() {
+    window.pauseTimer(); timeVal = 0; $('stopwatch').innerText = '00:00:00';
+  };
+
+  // ==================== 音乐与波形 ====================
+  let audioCtx = null, analyser = null, waveCanvas, waveCtx;
+  let animationFrameId = null;
+  function initAudioVisual() {
+    waveCanvas = $('waveCanvas');
+    if (!waveCanvas) return;
+    waveCtx = waveCanvas.getContext('2d');
+    const resizeWave = () => {
+      waveCanvas.width = waveCanvas.clientWidth;
+      waveCanvas.height = waveCanvas.clientHeight;
+    };
+    resizeWave();
+    window.addEventListener('resize', resizeWave);
+  }
+  function drawWave() {
+    if (!analyser || !waveCtx) return;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteTimeDomainData(dataArray);
+    waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+    waveCtx.lineWidth = 2;
+    waveCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#409eff';
+    waveCtx.beginPath();
+    const sliceWidth = waveCanvas.width / bufferLength;
+    let x = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      const v = dataArray[i] / 128.0;
+      const y = v * waveCanvas.height / 2;
+      if (i === 0) waveCtx.moveTo(x, y);
+      else waveCtx.lineTo(x, y);
+      x += sliceWidth;
+    }
+    waveCtx.lineTo(waveCanvas.width, waveCanvas.height / 2);
+    waveCtx.stroke();
+    animationFrameId = requestAnimationFrame(drawWave);
+  }
+  window.playMusic = function() {
+    const audio = $('bgm');
+    if (!audio) return;
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        const source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      } catch (e) {
+        console.warn('音频初始化失败', e);
+      }
+    }
+    if (audio.paused) {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      audio.play().then(() => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        drawWave();
+      }).catch(err => {
+        console.warn('播放失败：', err);
+        alert('音频播放失败，请确认music.mp3文件放在和html同一个文件夹！');
+      });
+    } else {
+      audio.pause();
+      if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+    }
+  };
+
+  // ==================== 实时时间 ====================
+  function showTime() {
+    const d = new Date();
+    $('time').innerText = d.toLocaleString();
+  }
+  showTime();
+  setInterval(showTime, 1000);
+
+  // ==================== 动态时钟 ====================
+  function updateLiveClock() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    const clockEl = $('liveClock');
+    if (clockEl) clockEl.innerText = `${hh}:${mm}:${ss}`;
+    const dateEl = $('clockDate');
+    if (dateEl) {
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      dateEl.innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
+    }
+  }
+  updateLiveClock();
+  setInterval(updateLiveClock, 1000);
+
+  // ==================== 数据仪表盘 ====================
+  let visitHistory = [12, 19, 8, 24, 17, 29, 21];
+  function drawDashboard() {
+    const dc = $('dashboardCanvas');
+    if (!dc) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = dc.getBoundingClientRect();
+    dc.width = rect.width * dpr;
+    dc.height = rect.height * dpr;
+    const dctx = dc.getContext('2d');
+    dctx.scale(dpr, dpr);
+    const W = rect.width, H = rect.height;
+    dctx.clearRect(0, 0, W, H);
+
+    const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#409eff';
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#a855f7';
+
+    const pad = 30;
+    const chartW = W - pad * 2;
+    const chartH = H - pad * 2 - 20;
+    const data = visitHistory;
+    const max = Math.max(...data) * 1.2;
+    const barW = chartW / data.length * 0.6;
+    const gap = chartW / data.length;
+
+    dctx.strokeStyle = 'rgba(128,128,128,0.12)';
+    dctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad + 20 + chartH * (i / 4);
+      dctx.beginPath();
+      dctx.moveTo(pad, y);
+      dctx.lineTo(W - pad, y);
+      dctx.stroke();
+    }
+
+    data.forEach((v, i) => {
+      const x = pad + gap * i + (gap - barW) / 2;
+      const barH = (v / max) * chartH;
+      const y = pad + 20 + chartH - barH;
+      const grad = dctx.createLinearGradient(0, y, 0, pad + 20 + chartH);
+      grad.addColorStop(0, primary);
+      grad.addColorStop(1, accent);
+      dctx.fillStyle = grad;
+      dctx.beginPath();
+      if (dctx.roundRect) dctx.roundRect(x, y, barW, barH, 6);
+      else dctx.rect(x, y, barW, barH);
+      dctx.fill();
+
+      dctx.fillStyle = '#888';
+      dctx.font = '12px sans-serif';
+      dctx.textAlign = 'center';
+      dctx.fillText(['一','二','三','四','五','六','日'][i], x + barW/2, H - 8);
+      dctx.fillStyle = primary;
+      dctx.font = 'bold 12px sans-serif';
+      dctx.fillText(v, x + barW/2, y - 6);
+    });
+
+    dctx.fillStyle = '#888';
+    dctx.font = '13px sans-serif';
+    dctx.textAlign = 'left';
+    dctx.fillText('近 7 天访问量趋势（模拟）', pad, 18);
+  }
+
+  // ==================== 番茄钟 + 任务联动 ====================
+  const POMO_WORK = 25 * 60;
+  const POMO_BREAK = 5 * 60;
+  let pomoTime = POMO_WORK;
+  let pomoInterval = null;
+  let pomoRunning = false;
+  let pomoIsBreak = false;
+  let currentTaskEl = null;
+
+  function updatePomoDisplay() {
+    const m = String(Math.floor(pomoTime / 60)).padStart(2, '0');
+    const s = String(pomoTime % 60).padStart(2, '0');
+    $('pomoDisplay').innerText = `${m}:${s}`;
+  }
+  function pomoTick() {
+    if (pomoTime > 0) {
+      pomoTime--;
+      updatePomoDisplay();
+    } else {
+      playBeep();
+      if (!pomoIsBreak) {
+        pomoIsBreak = true;
+        pomoTime = POMO_BREAK;
+        $('pomoStatus').innerText = '🍵 专注结束，休息 5 分钟吧～';
+        if (currentTaskEl) {
+          const check = currentTaskEl.querySelector('.task-check');
+          if (check) check.checked = true;
+          currentTaskEl.classList.add('done');
+          currentTaskEl = null;
+        }
+        updatePomoDisplay();
+      } else {
+        pomoIsBreak = false;
+        pomoTime = POMO_WORK;
+        $('pomoStatus').innerText = '🎉 休息结束，开始新一轮专注！';
+        updatePomoDisplay();
+        pomoStop();
+      }
+    }
+  }
+  function pomoStop() {
+    clearInterval(pomoInterval);
+    pomoInterval = null;
+    pomoRunning = false;
+    $('pomoStartBtn').innerText = '▶ 开始';
+  }
+  window.pomoToggle = function() {
+    if (pomoRunning) {
+      pomoStop();
+      $('pomoStatus').innerText = '⏸ 已暂停';
+    } else {
+      pomoRunning = true;
+      $('pomoStartBtn').innerText = '⏸ 暂停';
+      $('pomoStatus').innerText = pomoIsBreak ? '🍵 休息中～' : '🔥 专注中，加油！';
+      pomoInterval = setInterval(pomoTick, 1000);
+    }
+  };
+  window.pomoReset = function() {
+    pomoStop();
+    pomoIsBreak = false;
+    pomoTime = POMO_WORK;
+    currentTaskEl = null;
+    updatePomoDisplay();
+    $('pomoStatus').innerText = '准备开始专注吧～';
+  };
+  window.focusTask = function(el) {
+    currentTaskEl = el;
+    if (!pomoRunning) {
+      window.pomoReset();
+      window.pomoToggle();
+    }
+  };
+  window.addTask = function() {
+    const input = $('taskInput');
+    const val = input.value.trim();
+    if (!val) return;
+    const list = $('taskList');
+    const item = document.createElement('div');
+    item.className = 'task-item';
+    item.innerHTML = `
+      <input type="checkbox" class="task-check" onchange="this.parentElement.classList.toggle('done', this.checked)">
+      <span class="task-text">${escapeHtml(val)}</span>
+      <button class="btn task-focus" onclick="focusTask(this.closest('.task-item'))">专注</button>
+      <button class="btn" style="background:#ff6b6b;padding:4px 12px;font-size:13px;" onclick="this.parentElement.remove()">删除</button>
+    `;
+    list.appendChild(item);
+    input.value = '';
+  };
+  function playBeep() {
+    try {
+      const actx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.connect(gain);
+      gain.connect(actx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.3, actx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 1);
+      osc.start();
+      osc.stop(actx.currentTime + 1);
+    } catch (e) {}
+  }
+
+  // ==================== 倒计时器 ====================
+  let cdRemain = 0, cdTotal = 0, cdTimer = null, cdRunning = false;
+  function cdDisplay() {
+    const h = String(Math.floor(cdRemain / 3600)).padStart(2, '0');
+    const m = String(Math.floor((cdRemain % 3600) / 60)).padStart(2, '0');
+    const s = String(cdRemain % 60).padStart(2, '0');
+    $('countdownDisplay').innerText = `${h}:${m}:${s}`;
+  }
+  window.cdToggle = function() {
+    if (cdRunning) {
+      clearInterval(cdTimer);
+      cdRunning = false;
+      $('cdStartBtn').innerText = '▶ 继续';
+      $('cdStatus').innerText = '⏸ 已暂停';
+    } else {
+      if (cdRemain <= 0) {
+        const h = Math.max(0, parseInt($('cdH').value) || 0);
+        const m = Math.max(0, parseInt($('cdM').value) || 0);
+        const s = Math.max(0, parseInt($('cdS').value) || 0);
+        cdRemain = h * 3600 + m * 60 + s;
+        cdTotal = cdRemain;
+      }
+      if (cdRemain <= 0) { $('cdStatus').innerText = '请先设置时间'; return; }
+      cdRunning = true;
+      $('cdStartBtn').innerText = '⏸ 暂停';
+      $('cdStatus').innerText = '⏳ 倒计时中…';
+      cdTimer = setInterval(() => {
+        cdRemain--;
+        cdDisplay();
+        if (cdRemain <= 0) {
+          clearInterval(cdTimer);
+          cdRunning = false;
+          $('cdStartBtn').innerText = '▶ 开始';
+          $('cdStatus').innerText = '⏰ 时间到！';
+          playBeep();
+        }
+      }, 1000);
+    }
+    cdDisplay();
+  };
+  window.cdReset = function() {
+    clearInterval(cdTimer);
+    cdRunning = false;
+    cdRemain = 0;
+    cdTotal = 0;
+    cdDisplay();
+    $('cdStartBtn').innerText = '▶ 开始';
+    $('cdStatus').innerText = '';
+  };
+
+  // ==================== 二维码生成器（原生 Canvas） ====================
+  // 简化版 QR 生成器：生成一个包含输入数据的矩阵，并绘制成二维码样式
+  // 注意：这不是标准 QR 码，仅用于视觉演示和保存
+  function generateQR() {
+    const text = $('qrInput').value.trim() || 'GSD明轩';
+    const canvas = $('qrCanvas');
+    const ctx = canvas.getContext('2d');
+    const size = 220;
+    canvas.width = size;
+    canvas.height = size;
+    const moduleCount = 25; // 25x25 模块
+    const moduleSize = size / moduleCount;
+
+    // 清空
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, size, size);
+
+    // 基于文本生成伪随机矩阵
+    let seed = 0;
+    for (let i = 0; i < text.length; i++) seed = (seed * 31 + text.charCodeAt(i)) & 0xffffffff;
+    function rand() {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    }
+
+    const matrix = [];
+    for (let y = 0; y < moduleCount; y++) {
+      const row = [];
+      for (let x = 0; x < moduleCount; x++) {
+        row.push(rand() > 0.5 ? 1 : 0);
+      }
+      matrix.push(row);
+    }
+
+    // 定位图案（三个角）
+    function drawFinder(x0, y0) {
+      for (let y = 0; y < 7; y++) {
+        for (let x = 0; x < 7; x++) {
+          const isBorder = x === 0 || x === 6 || y === 0 || y === 6;
+          const isCenter = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+          matrix[y0 + y][x0 + x] = (isBorder || isCenter) ? 1 : 0;
+        }
+      }
+    }
+    drawFinder(0, 0);
+    drawFinder(moduleCount - 7, 0);
+    drawFinder(0, moduleCount - 7);
+
+    // 绘制
+    ctx.fillStyle = '#000000';
+    for (let y = 0; y < moduleCount; y++) {
+      for (let x = 0; x < moduleCount; x++) {
+        if (matrix[y][x]) {
+          ctx.fillRect(x * moduleSize, y * moduleSize, moduleSize, moduleSize);
+        }
+      }
+    }
+
+    // 中心加个小 logo
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#409eff';
+    const cx = size / 2, cy = size / 2, r = size * 0.09;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${r}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('G', cx, cy + 1);
+  }
+  window.generateQR = generateQR;
+
+  window.saveQR = function() {
+    const canvas = $('qrCanvas');
+    const link = document.createElement('a');
+    link.download = '二维码_' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
+  // ==================== 汇率换算 ====================
+  const rateToCNY = { CNY: 1, USD: 7.24, EUR: 7.82, JPY: 0.046, GBP: 9.21, HKD: 0.93 };
+  window.convertRate = function() {
+    const amount = parseFloat($('rateAmount').value) || 0;
+    const from = $('rateFrom').value;
+    const to = $('rateTo').value;
+    const cny = amount * rateToCNY[from];
+    const result = cny / rateToCNY[to];
+    $('rateResult').innerText = `${amount} ${from} ≈ ${result.toFixed(4)} ${to}`;
+  };
+
+  // ==================== 密码强度 ====================
+  window.checkPwd = function() {
+    const pwd = $('pwdInput').value;
+    const fill = $('pwdFill');
+    const label = $('pwdLabel');
+    const tips = $('pwdTips');
+    let score = 0;
+    const checks = [
+      { ok: pwd.length >= 8, text: '至少 8 位' },
+      { ok: /[a-z]/.test(pwd), text: '小写字母' },
+      { ok: /[A-Z]/.test(pwd), text: '大写字母' },
+      { ok: /[0-9]/.test(pwd), text: '数字' },
+      { ok: /[^A-Za-z0-9]/.test(pwd), text: '特殊符号' }
+    ];
+    checks.forEach(c => { if (c.ok) score++; });
+    const percent = (score / checks.length) * 100;
+    fill.style.width = percent + '%';
+    const colors = ['#ff4757', '#ff9f43', '#feca57', '#43e97b', '#27ae60'];
+    fill.style.background = colors[Math.min(score, colors.length - 1)];
+    const labels = ['非常弱', '弱', '中等', '强', '非常强'];
+    label.innerText = pwd ? `强度：${labels[Math.min(score, labels.length - 1)]}` : '';
+    label.style.color = colors[Math.min(score, colors.length - 1)];
+
+    tips.innerHTML = '';
+    checks.forEach(c => {
+      const span = document.createElement('span');
+      span.className = 'pwd-tip' + (c.ok ? ' ok' : '');
+      span.innerText = (c.ok ? '✓ ' : '○ ') + c.text;
+      tips.appendChild(span);
+    });
+  };
+
+  // ==================== JSON 格式化 ====================
+  function highlightJSON(obj) {
+    const json = JSON.stringify(obj, null, 2);
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+      let cls = 'j-num';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) cls = 'j-key';
+        else cls = 'j-str';
+      } else if (/true|false/.test(match)) cls = 'j-bool';
+      else if (/null/.test(match)) cls = 'j-null';
+      return `<span class="${cls}">${match}</span>`;
+    });
+  }
+  window.formatJSON = function() {
+    const input = $('jsonInput').value.trim();
+    const out = $('jsonOut');
+    if (!input) { out.innerText = '请输入 JSON 文本'; return; }
+    try {
+      const obj = JSON.parse(input);
+      out.innerHTML = highlightJSON(obj);
+    } catch (e) {
+      out.innerHTML = `<span style="color:#ff4757;">❌ JSON 解析错误：${e.message}</span>`;
+    }
+  };
+  window.minifyJSON = function() {
+    const input = $('jsonInput').value.trim();
+    const out = $('jsonOut');
+    if (!input) { out.innerText = '请输入 JSON 文本'; return; }
+    try {
+      const obj = JSON.parse(input);
+      out.innerText = JSON.stringify(obj);
+    } catch (e) {
+      out.innerHTML = `<span style="color:#ff4757;">❌ JSON 解析错误：${e.message}</span>`;
+    }
+  };
+  window.copyJSON = function() {
+    const text = $('jsonOut').innerText;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(showShareToast).catch(() => {});
+    }
+  };
+
+  // ==================== 迷你日记 ====================
+  window.saveDiary = function() {
+    const val = $('diaryInput').value.trim();
+    if (!val) { $('diaryStatus').innerText = '内容为空，无法保存'; return; }
+    localStorage.setItem('miniDiary', val);
+    $('diaryStatus').innerText = '✅ 小记已保存到本地！';
+  };
+  window.loadDiary = function() {
+    const saved = localStorage.getItem('miniDiary');
+    if (saved) {
+      $('diaryInput').value = saved;
+      $('diaryStatus').innerText = '📂 已读取上次保存的小记。';
+    } else {
+      $('diaryStatus').innerText = '还没有保存过小记哦。';
+    }
+  };
+  window.clearDiary = function() {
+    localStorage.removeItem('miniDiary');
+    $('diaryInput').value = '';
+    $('diaryStatus').innerText = '🗑️ 小记已清除。';
+  };
+
+  // ==================== 今日诗词 ====================
+  const poemLibrary = [
+    { line: '长风破浪会有时，直挂云帆济沧海。', author: '—— 李白《行路难》' },
+    { line: '山重水复疑无路，柳暗花明又一村。', author: '—— 陆游《游山西村》' },
+    { line: '会当凌绝顶，一览众山小。', author: '—— 杜甫《望岳》' },
+    { line: '沉舟侧畔千帆过，病树前头万木春。', author: '—— 刘禹锡' },
+    { line: '纸上得来终觉浅，绝知此事要躬行。', author: '—— 陆游' },
+    { line: '路漫漫其修远兮，吾将上下而求索。', author: '—— 屈原《离骚》' },
+    { line: '千磨万击还坚劲，任尔东西南北风。', author: '—— 郑燮《竹石》' },
+    { line: '莫愁前路无知己，天下谁人不识君。', author: '—— 高适《别董大》' },
+    { line: '天生我材必有用，千金散尽还复来。', author: '—— 李白《将进酒》' },
+    { line: '海内存知己，天涯若比邻。', author: '—— 王勃' }
+  ];
+  window.randomPoem = function() {
+    const idx = Math.floor(Math.random() * poemLibrary.length);
+    const poem = poemLibrary[idx];
+    $('poemLine').innerText = poem.line;
+    $('poemAuthor').innerText = poem.author;
+  };
+
+  // ==================== 随机寄语 ====================
+  const quoteData = {
+    inspire: ['星光不问赶路人，时光不负有心人', '坚持下去，代码会给你答案', '每一次调试，都是在靠近目标', '路虽远，行则将至'],
+    literature: ['山野万里，你是藏在微风里的欢喜', '晚风轻踩云朵，落日贩卖温柔', '人间朝暮，叶落惊秋', '以渺小启程，以伟大结束']
+  };
+  window.changeWord = function() {
+    const type = $('quoteType').value;
+    const arr = quoteData[type] || quoteData.inspire;
+    $('msg').innerText = arr[Math.floor(Math.random() * arr.length)];
+  };
+
+  // ==================== 颜色猜谜 ====================
+  let targetR, targetG, targetB;
+  window.newColor = function() {
+    targetR = Math.floor(Math.random() * 256);
+    targetG = Math.floor(Math.random() * 256);
+    targetB = Math.floor(Math.random() * 256);
+    $('colorBox').style.background = `rgb(${targetR},${targetG},${targetB})`;
+    $('colorTip').innerText = '';
+  };
+  window.checkColor = function() {
+    const r = Number($('rIn').value), g = Number($('gIn').value), b = Number($('bIn').value);
+    if (Math.abs(r - targetR) < 15 && Math.abs(g - targetG) < 15 && Math.abs(b - targetB) < 15) {
+      $('colorTip').innerText = '🎉猜对啦！';
+    } else {
+      $('colorTip').innerText = `有点差距，目标rgb(${targetR},${targetG},${targetB})`;
+    }
+  };
+
+  // ==================== 留言板 ====================
+  function renderMsg() {
+    const list = JSON.parse(localStorage.getItem('msgBoard') || '[]');
+    const wrap = $('msgList');
+    wrap.innerHTML = '';
+    const statMsg = $('statMsg');
+    if (statMsg) statMsg.innerText = list.length;
+    if (list.length === 0) {
+      wrap.innerHTML = '<p style="color:#999;">还没有留言，快来抢沙发吧～</p>';
+      return;
+    }
+    list.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.style.margin = '10px 0';
+      div.style.borderBottom = '1px solid #e0e0e0';
+      div.style.padding = '8px 0';
+      div.innerHTML = `<strong>${escapeHtml(item.name)}</strong>：${escapeHtml(item.content)}
+        <button onclick="delMsg(${i})" class="btn" style="padding:3px 12px;font-size:13px;margin-left:10px;background:#ff6b6b;">删除</button>`;
+      wrap.appendChild(div);
+    });
+  }
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  window.addMsg = function() {
+    const list = JSON.parse(localStorage.getItem('msgBoard') || '[]');
+    const name = $('msgName').value.trim(), cnt = $('msgContent').value.trim();
+    if (!name || !cnt) return alert('名字和留言不能为空！');
+    list.push({ name, content: cnt });
+    localStorage.setItem('msgBoard', JSON.stringify(list));
+    renderMsg();
+    $('msgName').value = ''; $('msgContent').value = '';
+  };
+  window.delMsg = function(idx) {
+    const list = JSON.parse(localStorage.getItem('msgBoard') || '[]');
+    list.splice(idx, 1);
+    localStorage.setItem('msgBoard', JSON.stringify(list));
+    renderMsg();
+  };
+
+  // ==================== 时间胶囊 ====================
+  window.saveCapsule = function() {
+    const text = $('capsuleText').value.trim(), date = $('capsuleDate').value;
+    if (!text || !date) { $('capsuleResult').innerText = '请填写内容和解锁日期'; return; }
+    localStorage.setItem('timeCapsule', JSON.stringify({ text, unlock: date }));
+    $('capsuleResult').innerText = '✅时间胶囊保存成功！';
+  };
+  window.readCapsule = function() {
+    const raw = localStorage.getItem('timeCapsule');
+    if (!raw) { $('capsuleResult').innerText = '暂无时间胶囊'; return; }
+    const cap = JSON.parse(raw);
+    if (new Date() >= new Date(cap.unlock)) $('capsuleResult').innerText = '🔓已解锁：' + cap.text;
+    else $('capsuleResult').innerText = '🔒还没到解锁日期：' + cap.unlock;
+  };
+
+  // ==================== 待办清单 ====================
+  window.addTodo = function() {
+    const val = $('todoInput').value.trim();
+    if (!val) return;
+    const li = document.createElement('li');
+    li.innerText = val;
+    li.style.margin = '8px 0';
+    const delBtn = document.createElement('button');
+    delBtn.innerText = '删除';
+    delBtn.className = 'btn';
+    delBtn.style.marginLeft = '10px';
+    delBtn.style.padding = '3px 12px';
+    delBtn.style.fontSize = '13px';
+    delBtn.style.background = '#ff6b6b';
+    delBtn.onclick = () => li.remove();
+    li.appendChild(delBtn);
+    $('todoList').appendChild(li);
+    $('todoInput').value = '';
+  };
+
+  // ==================== 猜数字 ====================
+  let secret = Math.floor(Math.random() * 10) + 1;
+  function resetSecret() { secret = Math.floor(Math.random() * 10) + 1; }
+  window.checkGuess = function() {
+    const g = Number($('guessNum').value);
+    if (!g || g < 1 || g > 10) { $('tip').innerText = '请输入 1~10 的数字'; return; }
+    if (g === secret) { $('tip').innerText = '🎉猜对了！'; resetSecret(); }
+    else if (g > secret) $('tip').innerText = '大了，再小一点';
+    else $('tip').innerText = '小了，再大一点';
+  };
+
+  // ==================== 石头剪刀布 ====================
+  window.playGame = function(userSelect) {
+    const arr = ['rock', 'scissors', 'paper'];
+    const computer = arr[Math.floor(Math.random() * 3)];
+    const map = { rock: '石头', scissors: '剪刀', paper: '布' };
+    const userTxt = map[userSelect], comTxt = map[computer];
+    let resText;
+    if (userSelect === computer) resText = `你出${userTxt}，电脑出${comTxt}，平局！`;
+    else if ((userSelect === 'rock' && computer === 'scissors') ||
+             (userSelect === 'scissors' && computer === 'paper') ||
+             (userSelect === 'paper' && computer === 'rock'))
+      resText = `你出${userTxt}，电脑出${comTxt}，🎉你赢了！`;
+    else resText = `你出${userTxt}，电脑出${comTxt}，😥你输了！`;
+    $('rpsResult').innerText = resText;
+  };
+
+  // ==================== 访问计数重置 ====================
+  window.resetCount = function() {
+    localStorage.removeItem('visit');
+    $('count').innerText = '0';
+    const statVisit = $('statVisit');
+    if (statVisit) statVisit.innerText = '0';
+  };
+
+  // ==================== 打字测速 ====================
+  let typeStart = null;
+  const originText = $('typeOrigin').innerText;
+  window.startTypeTest = function() {
+    typeStart = Date.now();
+    $('typeResult').innerText = '⏱️开始输入！';
+  };
+  window.endTypeTest = function() {
+    if (!typeStart) { $('typeResult').innerText = '先点【开始测速】'; return; }
+    const usedSec = (Date.now() - typeStart) / 1000;
+    const input = $('typeTestArea').value;
+    let correct = 0;
+    for (let k = 0; k < input.length; k++) if (input[k] === originText[k]) correct++;
+    const accuracy = (correct / originText.length * 100).toFixed(1);
+    const wpm = Math.round((input.length / usedSec) * 60 / 5);
+    $('typeResult').innerText = `用时${usedSec.toFixed(1)}秒，正确率${accuracy}%，打字速度${wpm} WPM`;
+    typeStart = null;
+  };
+
+  // ==================== 分数计算器 ====================
+  window.calc = function() {
+    const input = $('calcInput').value, resDom = $('calcResult');
+    try {
+      if (!/^[\d+\-*/().\s]+$/.test(input)) throw new Error('非法字符');
+      let exp = input.replace(/(\d+)\/(\d+)/g, (m, a, b) => `(${a}/${b})`);
+      const ans = Function('"use strict"; return (' + exp + ')')();
+      if (typeof ans !== 'number' || !isFinite(ans)) throw new Error('无效结果');
+      resDom.innerText = `${Number(ans.toPrecision(12))}`;
+    } catch (e) {
+      resDom.innerText = '计算出错，请检查输入！支持如 -2/1*648 、1/2+0.5';
+    }
+  };
+  window.inputNum = function(s) { $('calcInput').value += s; };
+  window.clearCalc = function() { $('calcInput').value = ''; $('calcResult').innerText = ''; };
+
+  // ==================== 幸运大转盘 ====================
+  const wheelCanvas = $('wheelCanvas');
+  const wheelCtx = wheelCanvas.getContext('2d');
+  const wheelPrizes = ['一等奖🎁', '二等奖🎈', '三等奖🍬', '谢谢参与😢', '再来一次🔄', '小星星⭐', '优惠券🎫', '神秘礼物🎉'];
+  const wheelColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#01a3a4', '#f368e0'];
+  let wheelAngle = 0;
+  let wheelSpinning = false;
+
+  function drawWheel(angle) {
+    const w = wheelCanvas.width, h = wheelCanvas.height;
+    const cx = w / 2, cy = h / 2, r = w / 2 - 6;
+    wheelCtx.clearRect(0, 0, w, h);
+    const n = wheelPrizes.length;
+    const per = (Math.PI * 2) / n;
+    for (let i = 0; i < n; i++) {
+      const start = angle + i * per;
+      const end = start + per;
+      wheelCtx.beginPath();
+      wheelCtx.moveTo(cx, cy);
+      wheelCtx.arc(cx, cy, r, start, end);
+      wheelCtx.closePath();
+      wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
+      wheelCtx.fill();
+      wheelCtx.strokeStyle = '#fff';
+      wheelCtx.lineWidth = 2;
+      wheelCtx.stroke();
+      wheelCtx.save();
+      wheelCtx.translate(cx, cy);
+      wheelCtx.rotate(start + per / 2);
+      wheelCtx.textAlign = 'right';
+      wheelCtx.textBaseline = 'middle';
+      wheelCtx.fillStyle = '#fff';
+      wheelCtx.font = 'bold 14px 微软雅黑';
+      wheelCtx.fillText(wheelPrizes[i], r - 12, 0);
+      wheelCtx.restore();
+    }
+    wheelCtx.beginPath();
+    wheelCtx.arc(cx, cy, 26, 0, Math.PI * 2);
+    wheelCtx.fillStyle = '#fff';
+    wheelCtx.fill();
+    wheelCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#409eff';
+    wheelCtx.lineWidth = 3;
+    wheelCtx.stroke();
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx - 10, 0);
+    wheelCtx.lineTo(cx + 10, 0);
+    wheelCtx.lineTo(cx, 22);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle = '#ff4757';
+    wheelCtx.fill();
+  }
+
+  window.spinWheel = function() {
+    if (wheelSpinning) return;
+    wheelSpinning = true;
+    $('wheelResult').innerText = '🎲 抽奖中...';
+    const n = wheelPrizes.length;
+    const per = (Math.PI * 2) / n;
+    const targetAngle = Math.PI * 2 * (5 + Math.random() * 3) + Math.random() * Math.PI * 2;
+    const startAngle = wheelAngle;
+    const duration = 3800;
+    const startTime = performance.now();
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function step(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      wheelAngle = startAngle + (targetAngle - startAngle) * easeOut(t);
+      drawWheel(wheelAngle);
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        wheelSpinning = false;
+        const normalized = ((-Math.PI / 2 - wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+        const idx = Math.floor(normalized / per) % n;
+        $('wheelResult').innerText = '🎉 恭喜获得：' + wheelPrizes[idx];
+        wheelAngle = wheelAngle % (Math.PI * 2);
+      }
+    }
+    requestAnimationFrame(step);
+  };
+
+  // ==================== 画板 ====================
+  const drawCanvas = $('drawCanvas');
+  const drawCtx = drawCanvas.getContext('2d');
+  let drawing = false;
+  let lastX = 0, lastY = 0;
+  let isEraser = false;
+
+  function initDraw() {
+    drawCtx.fillStyle = '#ffffff';
+    drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
+    drawCtx.lineCap = 'round';
+    drawCtx.lineJoin = 'round';
+
+    const getPos = (e) => {
+      const rect = drawCanvas.getBoundingClientRect();
+      const scaleX = drawCanvas.width / rect.width;
+      const scaleY = drawCanvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    };
+
+    const start = (e) => {
+      e.preventDefault();
+      drawing = true;
+      const pos = getPos(e);
+      lastX = pos.x; lastY = pos.y;
+      drawCtx.beginPath();
+      if (isEraser) drawCtx.fillStyle = '#ffffff';
+      else drawCtx.fillStyle = $('drawColor').value;
+      drawCtx.arc(lastX, lastY, $('drawSize').value / 2, 0, Math.PI * 2);
+      drawCtx.fill();
+    };
+    const move = (e) => {
+      if (!drawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      drawCtx.beginPath();
+      drawCtx.moveTo(lastX, lastY);
+      drawCtx.lineTo(pos.x, pos.y);
+      if (isEraser) drawCtx.strokeStyle = '#ffffff';
+      else drawCtx.strokeStyle = $('drawColor').value;
+      drawCtx.lineWidth = $('drawSize').value;
+      drawCtx.stroke();
+      lastX = pos.x; lastY = pos.y;
+    };
+    const end = () => { drawing = false; };
+
+    drawCanvas.addEventListener('mousedown', start);
+    drawCanvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    drawCanvas.addEventListener('touchstart', start, { passive: false });
+    drawCanvas.addEventListener('touchmove', move, { passive: false });
+    window.addEventListener('touchend', end);
+  }
+
+  window.toggleEraser = function() {
+    isEraser = !isEraser;
+    const btn = $('eraserBtn');
+    if (isEraser) {
+      btn.style.background = '#ff9f43';
+      btn.innerText = '🧽 橡皮擦 (开)';
+    } else {
+      btn.style.background = '#6c757d';
+      btn.innerText = '🧽 橡皮擦';
+    }
+  };
+
+  window.clearDraw = function() {
+    drawCtx.fillStyle = '#ffffff';
+    drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
+  };
+  window.saveDraw = function() {
+    const link = document.createElement('a');
+    link.download = '我的画作_' + Date.now() + '.png';
+    link.href = drawCanvas.toDataURL('image/png');
+    link.click();
+  };
+
+  // ==================== 折叠面板 ====================
+  window.toggleAccordion = function(item) {
+    const body = item.querySelector('.accordion-body');
+    const isOpen = item.classList.contains('open');
+    if (isOpen) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(() => {
+        body.style.maxHeight = '0';
+        item.classList.remove('open');
+      });
+    } else {
+      body.style.maxHeight = 'none';
+      item.classList.add('open');
+    }
+  };
+
+  // ==================== 幸运骰子 ====================
+  const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+  window.rollDice = function() {
+    const d1 = $('dice1'), d2 = $('dice2');
+    d1.classList.add('rolling');
+    d2.classList.add('rolling');
+    setTimeout(() => {
+      const v1 = Math.floor(Math.random() * 6);
+      const v2 = Math.floor(Math.random() * 6);
+      d1.innerText = diceFaces[v1];
+      d2.innerText = diceFaces[v2];
+      d1.classList.remove('rolling');
+      d2.classList.remove('rolling');
+      const sum = v1 + v2 + 2;
+      $('diceResult').innerText = `点数：${sum} ${sum >= 8 ? '🎉 大！' : '😐 小'}`;
+    }, 500);
+  };
+
+  // ==================== 键盘监听 ====================
+  document.addEventListener('keydown', (e) => {
+    const kp = $('keyPressed');
+    if (kp) kp.innerText = e.key === ' ' ? '空格' : e.key;
+  });
+
+  // ==================== 打地鼠 ====================
+  const moleGrid = $('moleGrid');
+  let moleScore = 0;
+  let moleTime = 30;
+  let moleTimer = null;
+  let molePopTimer = null;
+  let gameRunning = false;
+
+  if (moleGrid) {
+    for (let i = 0; i < 9; i++) {
+      const hole = document.createElement('div');
+      hole.className = 'mole-hole';
+      const mole = document.createElement('div');
+      mole.className = 'mole';
+      mole.innerText = '🐹';
+      hole.onclick = () => {
+        if (mole.classList.contains('up') && gameRunning) {
+          moleScore++;
+          $('moleScore').innerText = moleScore;
+          mole.classList.remove('up');
+          mole.style.transform = 'translateY(100%) scale(0.8)';
+          setTimeout(() => { if(!mole.classList.contains('up')) mole.style.transform = 'translateY(100%)'; }, 100);
+        }
+      };
+      hole.appendChild(mole);
+      moleGrid.appendChild(hole);
+    }
+  }
+
+  function popMole() {
+    if (!gameRunning) return;
+    const moles = document.querySelectorAll('.mole');
+    const count = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < count; i++) {
+      const randomIndex = Math.floor(Math.random() * 9);
+      const mole = moles[randomIndex];
+      if (!mole.classList.contains('up')) {
+        mole.classList.add('up');
+        mole.style.transform = 'translateY(0)';
+        setTimeout(() => {
+          mole.classList.remove('up');
+          mole.style.transform = 'translateY(100%)';
+        }, Math.random() * 800 + 400);
+      }
+    }
+  }
+
+  window.startMoleGame = function() {
+    if (gameRunning) return;
+    gameRunning = true;
+    moleScore = 0;
+    moleTime = 30;
+    $('moleScore').innerText = '0';
+    $('moleTime').innerText = '30';
+    $('moleStartBtn').style.display = 'none';
+    const moles = document.querySelectorAll('.mole');
+    moles.forEach(m => { m.classList.remove('up'); m.style.transform = 'translateY(100%)'; });
+
+    moleTimer = setInterval(() => {
+      moleTime--;
+      $('moleTime').innerText = moleTime;
+      if (moleTime <= 0) endMoleGame();
+    }, 1000);
+
+    const schedulePop = () => {
+      if (!gameRunning) return;
+      popMole();
+      const baseInterval = 1000 - ((30 - moleTime) / 30) * 600;
+      molePopTimer = setTimeout(schedulePop, baseInterval);
+    };
+    schedulePop();
+  };
+
+  function endMoleGame() {
+    gameRunning = false;
+    clearInterval(moleTimer);
+    clearTimeout(molePopTimer);
+    const moles = document.querySelectorAll('.mole');
+    moles.forEach(m => { m.classList.remove('up'); m.style.transform = 'translateY(100%)'; });
+    $('moleStartBtn').style.display = 'inline-block';
+    $('moleStartBtn').innerText = '🔄 再玩一次';
+    alert(`游戏结束！你的得分是：${moleScore} 分 🎉`);
+  }
+
+  // ==================== 页面停留统计 ====================
+  let staySeconds = 0;
+  setInterval(() => {
+    staySeconds += 10;
+    const statStay = $('statStay');
+    if (statStay) {
+      if (staySeconds < 60) statStay.innerText = staySeconds + 's';
+      else if (staySeconds < 3600) statStay.innerText = Math.floor(staySeconds/60) + 'm ' + (staySeconds%60) + 's';
+      else statStay.innerText = Math.floor(staySeconds/3600) + 'h ' + Math.floor((staySeconds%3600)/60) + 'm';
+    }
+    drawDashboard();
+  }, 10000);
+
+  // ==================== 今日心情 ====================
+  function updateMood() {
+    const hour = new Date().getHours();
+    let mood = '😊';
+    if (hour >= 5 && hour < 9) mood = '🌅 早安';
+    else if (hour >= 9 && hour < 12) mood = '☀️ 上午好';
+    else if (hour >= 12 && hour < 14) mood = '🍚 午安';
+    else if (hour >= 14 && hour < 18) mood = '🌤️ 下午好';
+    else if (hour >= 18 && hour < 22) mood = '🌆 晚上好';
+    else mood = '🌙 夜深了';
+    const statMood = $('statMood');
+    if (statMood) statMood.innerText = mood;
+  }
+
+  // ==================== 初始化 ====================
+  window.addEventListener('load', () => {
+    typeWrite();
+    updateVisitCount();
+    renderMsg();
+    newColor();
+    initAudioVisual();
+    resetSecret();
+    drawWheel(0);
+    initDraw();
+    updatePomoDisplay();
+    updateLiveClock();
+    randomPoem();
+    loadDiary();
+    updateMood();
+    drawDashboard();
+    generateQR();
+    convertRate();
+    checkPwd();
+    fadeCards.forEach(showCard);
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (starAnimationId) cancelAnimationFrame(starAnimationId);
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    if (snowTimer) clearInterval(snowTimer);
+    if (timerId) clearInterval(timerId);
+    if (pomoInterval) clearInterval(pomoInterval);
+    if (moleTimer) clearInterval(moleTimer);
+    if (molePopTimer) clearTimeout(molePopTimer);
+    if (cdTimer) clearInterval(cdTimer);
+  });
+
+})();
+</script>
+</body>
+</html>
